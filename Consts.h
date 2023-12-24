@@ -39,8 +39,8 @@ const uint32_t min_pulse_time = 0;
 const uint32_t max_space_time = 2000;
 const uint32_t min_space_time = 10;
 
-uint32_t pulse_time = min_pulse_time;
-uint32_t space_time = min_space_time;
+uint32_t pulse_time = 200;
+uint32_t space_time = 1000;
 
 bool use_serial = true ; //  print to serial (set monitor to same boudrate)
 bool use_display = false; // display on SH106 (make sure Display I2C address and DATA nad Clock conection)  
