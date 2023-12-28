@@ -14,18 +14,19 @@ void setup() {
   pinMode(encoder_sw, INPUT_PULLUP);
   pinMode(encoder_pinA, INPUT); 
   pinMode(encoder_pinB, INPUT); 
-     
   Serial.begin(BAUDRATE);
   delay (100);// wait to make sure serial begin
+  start_display();
   Serial.println("START");
   digitalWrite(SR_en_pin, LOW); 
 }
 
 void loop() {
-  off_all_valves(num_of_valves);
-//  cycle_all_valves(num_of_valves);
-//  reverse_cycle_all_valves(num_of_valves);
   do_encoder();
+  display_settings();
+  off_all_valves(num_of_valves);
+  cycle_all_valves(num_of_valves);
+  reverse_cycle_all_valves(num_of_valves);
   
 //  off_all_valves(num_of_valves);
 //  for (int k = 0; k < 2; k++) {
