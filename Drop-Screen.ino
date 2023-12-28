@@ -24,9 +24,9 @@ void setup() {
 void loop() {
   do_encoder();
   display_settings();
-  off_all_valves(num_of_valves);
-  cycle_all_valves(num_of_valves);
-  reverse_cycle_all_valves(num_of_valves);
+//  off_all_valves(num_of_valves);
+//  cycle_all_valves(num_of_valves);
+//  reverse_cycle_all_valves(num_of_valves);
   
 //  off_all_valves(num_of_valves);
 //  for (int k = 0; k < 2; k++) {

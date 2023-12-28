@@ -33,22 +33,35 @@
 #define INTERNAL_LED 13
 #define BAUDRATE 115200
  
-const int num_of_boards = 1; 
-const int valves_per_board = 16;
-const int num_of_valves = valves_per_board * num_of_boards;
 const uint32_t max_pulse_time = 1000; // ms
 const uint32_t min_pulse_time = 0;
 const uint32_t max_space_time = 2000;
 const uint32_t min_space_time = 0;
+const byte max_cassettes = 32;
+const byte boards_per_cassette = 4;
+const byte valves_per_board = 16;
 const uint32_t pulse_encoder_inc = 10; // how much does the encoder increases the pulse time
 const uint32_t space_encoder_inc = 100; // how much does the encoder increases the pulse time
 
+const int num_of_valves = max_cassettes*boards_per_cassette*valves_per_board; 
+
 uint32_t pulse_time = 100;
 uint32_t space_time = 500;
+byte cassette_num = 0;
+byte board_num = 0;
+byte valve_num = 0;
+byte current_setting = 0; // 0-cassette , 1-board , 2-valve
+const byte max_settings = 3;
+const uint32_t confirm_time = 3000;
+const uint32_t valve_on_time = 4000;
 
+bool on_button = false;
+bool started = false;
+uint32_t last_click = 0;
 byte old_encoder_read = 0;
 byte new_encoder_read = 0;
-unsigned int encoder_pos = 0;
+byte encoder_pos = 0;
+const byte prescaler = 1;
 
 float delay_tick = 1;
 

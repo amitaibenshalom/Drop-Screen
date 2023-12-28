@@ -34,13 +34,26 @@ void start_display(){
 }
 
 void display_settings(){
+
+//  cassette_num = min(max_cassettes, max(0, cassette_num)); //just in case
+//  board_num = min(boards_per_cassette, max(0, board_num)); //just in case
+//  valve_num = min(valves_per_board, max(0, valve_num)); //just in case
   display.clearDisplay();
   display.setCursor(0, 0);
-  display.print("Pt=");
-  display.print(pulse_time);
-  display.println("ms");
-  display.print("St=");
-  display.print(space_time);
-  display.println("ms");
+  display.print(current_setting==0?">Cst= ":" Cst=");
+  display.println(cassette_num+1);
+  display.print(current_setting==1?">Brd= ":" Brd=");
+  char board_char = 'a'+board_num;
+  display.println(board_char);  // 0->a, 1->b...
+  display.print(current_setting==2?">Vlv= ":" Vlv=");
+  display.println(valve_num+1);
   display.display();
+//  display.print(cassette_num);
+//  display.print("Pt=");
+//  display.print(pulse_time);
+//  display.println("ms");
+//  display.print("St=");
+//  display.print(space_time);
+//  display.println("ms");
+//  display.display();
 }
