@@ -23,7 +23,11 @@ void setup() {
 }
 
 void loop() {
-  do_encoder();
+  do_encoder(true);
+  if (started == true && millis()-last_start > started_display_time) {
+    started = false;
+    display_settings();
+  }
 //  off_all_valves(num_of_valves);
 //  cycle_all_valves(num_of_valves);
 //  reverse_cycle_all_valves(num_of_valves);

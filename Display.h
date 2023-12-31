@@ -33,24 +33,29 @@ void start_display(){
   display.display();
 }
 
-void display_settings(){
-
+void display_started() {
   display.clearDisplay();
-  display.setCursor(0, 0);
-  display.print(current_setting==0?">Cst= ":" Cst=");
-  display.println(cassette_num+1);
-  display.print(current_setting==1?">Brd= ":" Brd=");
-  char board_char = 'a'+board_num;
-  display.println(board_char);  // 0->a, 1->b...
-  display.print(current_setting==2?">Vlv= ":" Vlv=");
-  valve_num==valves_per_board ? display.println("all") : display.println(valve_num+1);
+  display.setCursor(50, 32);
+  display.println("ON");
   display.display();
-//  display.print(cassette_num);
-//  display.print("Pt=");
-//  display.print(pulse_time);
-//  display.println("ms");
-//  display.print("St=");
-//  display.print(space_time);
-//  display.println("ms");
-//  display.display();
+}
+
+void display_settings(){
+  if (started) {
+    display_started();  
+  }
+  else {
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.print(current_setting==0?">Cst= ":" Cst=");
+    display.println(cassette_num+1);
+    display.print(current_setting==1?">Brd= ":" Brd=");
+    char board_char = 'a'+board_num;
+    display.println(board_char);  // 0->a, 1->b...
+    display.print(current_setting==2?">Vlv= ":" Vlv=");
+    valve_num==valves_per_board ? display.println("all") : display.println(valve_num+1);
+    display.print(current_setting==3?">Dur= ":" Dur=");
+    display.println(valve_on_time);
+    display.display();
+  }
 }

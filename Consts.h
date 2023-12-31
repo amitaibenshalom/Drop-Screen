@@ -40,25 +40,32 @@ const uint32_t min_space_time = 0;
 const byte max_cassettes = 32;
 const byte boards_per_cassette = 4;
 const byte valves_per_board = 16;
+const uint32_t max_frequency = 30;
+const uint32_t min_frequency = 0;
+const uint32_t max_valve_on_time = 5000;
+const uint32_t min_valve_on_time = 100;
 const uint32_t pulse_encoder_inc = 10; // how much does the encoder increases the pulse time
 const uint32_t space_encoder_inc = 100; // how much does the encoder increases the pulse time
+const uint32_t valve_on_time_step = 100;
 
 const int num_of_valves = max_cassettes*boards_per_cassette*valves_per_board; 
 const int valves_per_cassette = boards_per_cassette*valves_per_board;
 
 uint32_t pulse_time = 100;
-uint32_t space_time = 500;
 byte cassette_num = 0;
 byte board_num = 0;
 byte valve_num = 0;
+uint32_t valve_on_time = 4000;
+//uint32_t frequency = 0;
+uint32_t space_time = 500;
 byte current_setting = 0; // 0-cassette , 1-board , 2-valve
-const byte max_settings = 3;
-const uint32_t confirm_time = 3000;
-const uint32_t valve_on_time = 4000;
-
+const byte max_settings = 4;
+const uint32_t confirm_time = 2200;
+const uint32_t started_display_time = 2000;
 bool on_button = false;
 bool started = false;
 uint32_t last_click = 0;
+uint32_t last_start = 0;
 byte old_encoder_read = 0;
 byte new_encoder_read = 0;
 signed int encoder_pos = 0;

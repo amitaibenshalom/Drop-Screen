@@ -2,16 +2,18 @@
 
 #include "Display.h"
 
-//void pulse_io(int);
-//void off_all_valves(int);
-//void on_all_valves(int);
-//void cycle_all_valves(int);
-//void valve_on(int);
-//void reverse_cycle_all_valves(int);
-//void array_to_valves(bool[], int);
-//int read_encoder();
-//void do_encoder();
-//void delay_with_encoder(uint32_t);
+void pulse_io(int);
+void off_all_valves(int);
+void on_all_valves(int);
+void cycle_all_valves(int);
+void valve_on(int);
+void reverse_cycle_all_valves(int);
+void array_to_valves(bool[], int);
+int read_encoder();
+void do_encoder(bool);
+void delay_with_encoder(uint32_t);
+void valve_on_from_settings(int, int, int);
+void on_all_board(int, int);
 
 void pulse_io(int io_num){
   digitalWrite(io_num, HIGH);   
@@ -57,12 +59,14 @@ void on_all_board(int cassette, int board) {
 }
 
 void delay_with_encoder(uint32_t delay_time) {
-//  do_encoder();
   for (int i = 0; i < delay_time/delay_tick; i++) {
     delay(delay_tick);
-//    do_encoder();
+    if (started == true && millis() - last_start > started_display_time) {
+      started = false;
+      display_settings();
+    }
+    do_encoder(false); // handle encoder without the option to confirm to avoid looping
   }
-//  display_settings();
 }
 
 int read_encoder() {
@@ -81,7 +85,7 @@ int read_encoder() {
   }
 }
 
-void do_encoder() {
+void do_encoder(bool enable_confirm) {
   int value = read_encoder();
   encoder_pos += value;
   if (value != 0)
@@ -93,23 +97,32 @@ void do_encoder() {
   }
   if (value == 0 && on_button && digitalRead(encoder_sw)==HIGH) {
     on_button = false;
-    current_setting++;
-    if (current_setting >= max_settings)
-      current_setting = 0;
-    display_settings();
+    if (millis() - last_click < confirm_time) {
+      current_setting++;
+      if (current_setting >= max_settings)
+        current_setting = 0;
+      display_settings();
+    }
   }
   if (value == 0 && on_button && digitalRead(encoder_sw)==LOW) {
-    if (millis() - last_click >= confirm_time) {
+    if (started == false && millis() - last_click >= confirm_time && enable_confirm) {
+      started = true;
+      last_start = millis();
+      display_started();
       if (valve_num == valves_per_board) {
         on_all_board(cassette_num,board_num);
-        delay(valve_on_time);
+        delay_with_encoder(valve_on_time);
         off_all_valves(num_of_valves);
+        started = false;
+        display_settings();
       }
       else {
         off_all_valves(num_of_valves);
         valve_on_from_settings(cassette_num, board_num, valve_num);
-        delay(valve_on_time);
+        delay_with_encoder(valve_on_time);
         off_all_valves(num_of_valves);
+        started = false;
+        display_settings();
       }
     }
   }
@@ -126,6 +139,9 @@ void do_encoder() {
       case 2:
         valve_num += (valve_num==valves_per_board&&value==1 ? 0 : (valve_num==0&&value==-1 ? 0 : value));
         break;
+      case 3:
+        valve_on_time += (valve_on_time==max_valve_on_time&&value==1 ? 0 : (valve_on_time==min_valve_on_time&&value==-1 ? 0 : value*valve_on_time_step));
+        break;
     }
     display_settings();
   }
@@ -136,12 +152,12 @@ void cycle_all_valves(int num_of_valves){
   pulse_io(SR_clk_pin);
   digitalWrite(SR_data_pin, LOW);
   pulse_io(SR_st_pin);
-  delay(pulse_time);
+  delay_with_encoder(pulse_time);
   for (int i = 1; i <= num_of_valves; i++) {
     pulse_io(SR_clk_pin);
     pulse_io(SR_st_pin);// update all valves immediately after every shift
-    do_encoder();
-    display_settings();
+//    do_encoder();
+//    display_settings();
     delay_with_encoder(pulse_time);
   }
 }
@@ -150,9 +166,9 @@ void cycle_all_valves(int num_of_valves){
 
 void reverse_cycle_all_valves(int num_of_valves){
   for (int i = num_of_valves-1; i >= 0; i--) {
-    valve_on(i);
-    do_encoder();
-    display_settings();
+//    valve_on(i);
+//    do_encoder(true);
+//    display_settings();
     delay_with_encoder(pulse_time);
     off_all_valves(num_of_valves);
   }
