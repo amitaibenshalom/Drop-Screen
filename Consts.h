@@ -44,6 +44,7 @@ const uint32_t pulse_encoder_inc = 10; // how much does the encoder increases th
 const uint32_t space_encoder_inc = 100; // how much does the encoder increases the pulse time
 
 const int num_of_valves = max_cassettes*boards_per_cassette*valves_per_board; 
+const int valves_per_cassette = boards_per_cassette*valves_per_board;
 
 uint32_t pulse_time = 100;
 uint32_t space_time = 500;
@@ -60,7 +61,7 @@ bool started = false;
 uint32_t last_click = 0;
 byte old_encoder_read = 0;
 byte new_encoder_read = 0;
-byte encoder_pos = 0;
+signed int encoder_pos = 0;
 const byte prescaler = 2;
 
 float delay_tick = 1;

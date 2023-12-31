@@ -19,7 +19,7 @@ void setup() {
   start_display();
   Serial.println("START");
   digitalWrite(SR_en_pin, LOW); 
-  display_settings()
+  display_settings();
 }
 
 void loop() {
