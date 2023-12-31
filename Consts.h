@@ -61,7 +61,7 @@ uint32_t last_click = 0;
 byte old_encoder_read = 0;
 byte new_encoder_read = 0;
 byte encoder_pos = 0;
-const byte prescaler = 1;
+const byte prescaler = 2;
 
 float delay_tick = 1;
 

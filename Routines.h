@@ -77,17 +77,18 @@ void do_encoder() {
   }
   if (value == 0 && on_button && digitalRead(encoder_sw)==HIGH) {
     on_button = false;
+    current_setting++;
+    if (current_setting >= max_settings)
+      current_setting = 0;
+    display_settings();
+  }
+  if (value == 0 && on_button && digitalRead(encoder_sw)==LOW) {
     if (millis() - last_click >= confirm_time) {
 //      start_from_settings();
         off_all_valves(num_of_valves);
         valve_on(cassette_num*boards_per_cassette*valves_per_board + board_num*valves_per_board + valve_num);
         delay(valve_on_time);
         off_all_valves(num_of_valves);
-    }
-    else {
-      current_setting++;
-      if (current_setting >= max_settings)
-        current_setting = 0;
     }
   }
   if (value != 0 && (encoder_pos >= prescaler || encoder_pos <= -prescaler) && digitalRead(encoder_sw)==HIGH) {
@@ -104,6 +105,7 @@ void do_encoder() {
         valve_num += (valve_num==valves_per_board-1&&value==1 ? 0 : (valve_num==0&&value==-1 ? 0 : value));
         break;
     }
+    display_settings();
   }
 //    if (value != 0) {
 //    Serial.println(encoder_pos);
