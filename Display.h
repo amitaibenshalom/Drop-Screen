@@ -30,14 +30,17 @@ void start_display(){
   display.display();
   delay(500);
   display.clearDisplay();
+  display.setTextSize(1);
   display.display();
 }
 
 void display_started() {
   display.clearDisplay();
+  display.setTextSize(2);
   display.setCursor(50, 32);
   display.println("ON");
   display.display();
+  display.setTextSize(1);
 }
 
 void display_settings(){
@@ -47,15 +50,17 @@ void display_settings(){
   else {
     display.clearDisplay();
     display.setCursor(0, 0);
-    display.print(current_setting==0?">Cst= ":" Cst=");
+    display.print(current_setting==0?">Cassette= ":" Cassette=");
     display.println(cassette_num+1);
-    display.print(current_setting==1?">Brd= ":" Brd=");
+    display.print(current_setting==1?">Board= ":" Board=");
     char board_char = 'a'+board_num;
     display.println(board_char);  // 0->a, 1->b...
-    display.print(current_setting==2?">Vlv= ":" Vlv=");
+    display.print(current_setting==2?">Valve= ":" Valve=");
     valve_num==valves_per_board ? display.println("all") : display.println(valve_num+1);
-    display.print(current_setting==3?">Dur= ":" Dur=");
+    display.print(current_setting==3?">Duration= ":" Duration=");
     display.println(valve_on_time);
+    display.print(current_setting==4?">Cycle= ":" Cycle=");
+    display.println(cycle_flag?"yes":"no");
     display.display();
   }
 }

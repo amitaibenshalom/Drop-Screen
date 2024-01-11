@@ -24,9 +24,16 @@ void setup() {
 
 void loop() {
   do_encoder(true);
-  if (started == true && millis()-last_start > started_display_time) {
+  if (started && !cycle_flag && millis()-last_start > started_display_time) {
     started = false;
     display_settings();
+  }
+  if (cycle_flag && started) {
+    off_all_valves(num_of_valves);
+    cycle_all_valves(cassette_num*valves_per_cassette+board_num*valves_per_board+valve_num);
+    off_all_valves(num_of_valves);
+    reverse_cycle_all_valves(cassette_num*valves_per_cassette+board_num*valves_per_board+valve_num);
+    off_all_valves(num_of_valves);
   }
 //  off_all_valves(num_of_valves);
 //  cycle_all_valves(num_of_valves);
