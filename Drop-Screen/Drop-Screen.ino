@@ -36,14 +36,16 @@ void loop() {
     valve_on_flag = false;
   }
   if (led_on_flag && millis() - last_led_on > led_on_time) {
-    led_off();
+    if (!full_light)
+      led_off();
     led_on_flag = false;
   }
   if (led_start_flag && millis() - last_led_start > led_start) {
     led_start_flag = false;
     led_on_flag = true;
     last_led_on = millis();
-    led_on();
+    if (!full_light && led_on_time > 0)
+      led_on();
   }
 
   if (!drawing_flag && !space_flag) {
@@ -56,8 +58,8 @@ void loop() {
       off_all_valves(num_of_valves);
       space_flag = true;
       last_space_time = millis();
-      cassette_drawing++;
-      if (cassette_drawing == 10) {
+      cassette_drawing += drawing_depth;
+      if (cassette_drawing >= 10) {
         cassette_drawing = 0;
         drawing_index++;
         if (drawing_index >= drawings_num)

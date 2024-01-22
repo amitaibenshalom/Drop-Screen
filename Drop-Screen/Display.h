@@ -1,3 +1,6 @@
+#ifndef DISPLAY_H
+#define DISPLAY_H
+
 #include "Consts.h"
 #include <SPI.h>
 #include <Wire.h>
@@ -46,6 +49,10 @@ void display_settings(){
   display.println(led_on_time);
   display.print(current_setting==4?">Depth= ":" Depth=");
   display.println(drawing_depth);
+  display.print(current_setting==5?">Full Light= ":" Full Light=");
+  display.println(full_light?"yes":"no");
   display.display();
-
 }
+
+
+#endif

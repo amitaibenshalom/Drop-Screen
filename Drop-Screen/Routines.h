@@ -83,7 +83,14 @@ void init_drawing(byte index) {
   row_in_drawing = 0;
   led_start_flag = true;
   last_led_start = millis();
-  led_off();
+  if (full_light)
+    led_on();
+  else {
+    if (led_start > 0)
+      led_off();
+    else
+      led_on();
+  }
   valve_on_flag = false;
   off_all_valves(num_of_valves);
   space_flag = false;
@@ -101,8 +108,10 @@ bool check_drawing() {
   if (!valve_on_flag) {
     if (row_in_drawing == image_h)
       return true;
-//    array_to_valves(&(drawings[drawing_index][row_in_drawing * image_w]), image_w);
-    array_to_valves_progmem(drawing_index, row_in_drawing);
+    // drawing depth is the depth of the image - reapet for the neccesary amout of layers
+    for (int i = 0; i < drawing_depth; i++) {
+      array_to_valves_progmem(drawing_index, row_in_drawing);
+    }
     digitalWrite(SR_data_pin, LOW);
     for (int i = 0; i < cassette_drawing * image_w; i++) {
       pulse_io(SR_clk_pin);
@@ -164,6 +173,9 @@ void do_encoder() {
         break;
       case 4:
         drawing_depth += (drawing_depth == max_drawing_depth && value == 1 ? 0 : (drawing_depth == min_drawing_depth && value == -1 ? 0 : value * drawing_depth_step));
+        break;
+      case 5:
+        full_light = !full_light;
         break;
     }
     display_settings();
