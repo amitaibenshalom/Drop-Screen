@@ -27,7 +27,7 @@ void setup() {
 void loop() {
 
   do_encoder();
-
+  
   if (space_flag && millis() - last_space_time > space_time) {
     space_flag = false;
   }
@@ -48,10 +48,10 @@ void loop() {
       led_on();
   }
 
-  if (!drawing_flag && !space_flag) {
+  if (!drawing_flag && !space_flag && !dim3_flag) {
     init_drawing(drawing_index);
   }
-  if (drawing_flag) {
+  if (drawing_flag && !dim3_flag) {
     if (check_drawing()) {
 //      Serial.println("done drawing");
       drawing_flag = false;
@@ -65,6 +65,21 @@ void loop() {
         if (drawing_index >= drawings_num)
           drawing_index = 0;
       }
+    }
+  }
+
+  if (dim3_flag && !drawing_flag && !space_flag) {
+    init_drawing_3d(drawing_3d_index);
+  }
+  if (dim3_flag && drawing_flag) {
+    if (check_drawing_3d()) {
+      drawing_flag = false;
+      off_all_valves(num_of_valves);
+      space_flag = true;
+      last_space_time = millis();
+      drawing_3d_index++;
+      if (drawing_3d_index >= drawings_num_3d)
+        drawing_index = 0;
     }
   }
 }

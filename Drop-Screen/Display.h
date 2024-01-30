@@ -51,6 +51,8 @@ void display_settings(){
   display.println(drawing_depth);
   display.print(current_setting==5?">Full Light= ":" Full Light=");
   display.println(full_light?"yes":"no");
+  display.print(current_setting==6?">Type= ":" Type=");
+  display.println(dim3_flag?"3D":"2D");
   display.display();
 }
 
