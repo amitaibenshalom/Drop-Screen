@@ -30,7 +30,7 @@ void off_all_valves(uint16_t num_of_valves) {
   digitalWrite(SR_data_pin, LOW);
   for (int i = 0; i < num_of_valves; i++)
     pulse_io(SR_clk_pin);
-  pulse_io(SR_st_pin);
+//  pulse_io(SR_st_pin);
 }
 
 //void on_all_valves(int num_of_valves){
@@ -123,7 +123,7 @@ void array_to_valves_progmem_3d(byte d_index, byte l_index) {
 
 void init_drawing(byte index) {
   drawing_index = index; //for safety if user didnt changed drawing_index to match the index
-  row_in_drawing = 0;
+  row_in_drawing = image_h - 1;
   led_start_flag = true;
   last_led_start = millis();
   if (full_light)
@@ -169,7 +169,7 @@ bool check_drawing() {
 //    Serial.println();
 
   if (!valve_on_flag) {
-    if (row_in_drawing == image_h)
+    if (row_in_drawing == -1)
       return true;
     // drawing depth is the depth of the image - reapet for the neccesary amout of layers
     for (int i = 0; i < drawing_depth; i++) {
@@ -182,7 +182,7 @@ bool check_drawing() {
     pulse_io(SR_st_pin);
     valve_on_flag = true;
     last_valve_on = millis();
-    row_in_drawing++;
+    row_in_drawing--;
   }
   return false;
 }

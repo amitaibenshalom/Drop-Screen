@@ -10,6 +10,7 @@ void setup() {
   digitalWrite(SR_clk_pin, LOW);
   digitalWrite(SR_data_pin, LOW);
   off_all_valves(num_of_valves);
+  pulse_io(SR_st_pin);
   pinMode(encoder_sw, INPUT_PULLUP);
   pinMode(encoder_pinA, INPUT); 
   pinMode(encoder_pinB, INPUT); 
@@ -32,7 +33,7 @@ void loop() {
     space_flag = false;
   }
   if (valve_on_flag && millis() - last_valve_on > valve_on_time) {
-    off_all_valves(num_of_valves);
+    off_all_valves(num_of_valves); // without pulsing ST because layers should be continuous
     valve_on_flag = false;
   }
   if (led_on_flag && millis() - last_led_on > led_on_time) {
@@ -49,6 +50,8 @@ void loop() {
   }
 
   if (!drawing_flag && !space_flag && !dim3_flag) {
+    off_all_valves(num_of_valves);
+    pulse_io(SR_st_pin);
     init_drawing(drawing_index);
   }
   if (drawing_flag && !dim3_flag) {
@@ -56,9 +59,10 @@ void loop() {
 //      Serial.println("done drawing");
       drawing_flag = false;
       off_all_valves(num_of_valves);
+      pulse_io(SR_st_pin);
       space_flag = true;
       last_space_time = millis();
-      cassette_drawing += drawing_depth;
+      cassette_drawing += 2;
       if (cassette_drawing >= 10) {
         cassette_drawing = 0;
         drawing_index++;
@@ -69,12 +73,15 @@ void loop() {
   }
 
   if (dim3_flag && !drawing_flag && !space_flag) {
+    off_all_valves(num_of_valves);
+    pulse_io(SR_st_pin);
     init_drawing_3d(drawing_3d_index);
   }
   if (dim3_flag && drawing_flag) {
     if (check_drawing_3d()) {
       drawing_flag = false;
       off_all_valves(num_of_valves);
+      pulse_io(SR_st_pin);
       space_flag = true;
       last_space_time = millis();
       drawing_3d_index++;
