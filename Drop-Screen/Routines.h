@@ -201,6 +201,9 @@ bool check_drawing_3d() {
   return false;
 }
 
+uint16_t calc_time_factor(byte row) {
+  
+}
 
 int read_encoder() {
   old_encoder_read = new_encoder_read;

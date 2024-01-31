@@ -43,10 +43,10 @@ void display_settings(){
   display.println(valve_on_time);  
   display.print(current_setting==1?">Space Time= ":" Space Time=");
   display.println(space_time);
-  display.print(current_setting==2?">Led Start= ":" Led Start=");
-  display.println(led_start);
-  display.print(current_setting==3?">Led Time= ":" Led Time=");
-  display.println(led_on_time);
+//  display.print(current_setting==2?">Led Start= ":" Led Start=");
+//  display.println(led_start);
+//  display.print(current_setting==3?">Led Time= ":" Led Time=");
+//  display.println(led_on_time);
   display.print(current_setting==4?">Depth= ":" Depth=");
   display.println(drawing_depth);
   display.print(current_setting==5?">Full Light= ":" Full Light=");
