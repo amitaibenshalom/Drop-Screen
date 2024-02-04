@@ -14,14 +14,16 @@ void setup() {
   pinMode(encoder_sw, INPUT_PULLUP);
   pinMode(encoder_pinA, INPUT); 
   pinMode(encoder_pinB, INPUT); 
-  pinMode(led_pin, OUTPUT);
+  pinMode(red_led_pin, OUTPUT);
+  pinMode(green_led_pin, OUTPUT);
+  pinMode(blue_led_pin, OUTPUT);
   led_off();
   Serial.begin(BAUDRATE);
   delay (100);// wait to make sure serial begin
   start_display();
   Serial.println("START");
   digitalWrite(SR_en_pin, LOW); 
-  update_height();
+  update_height(); // for auto factoring
   drawing_index = 0;
   display_settings();
 }
@@ -47,7 +49,7 @@ void loop() {
     led_on_flag = true;
     last_led_on = millis();
     if (!full_light && led_on_time > 0)
-      led_on();
+      led_on(color);
   }
 
   if (!drawing_flag && !space_flag && !dim3_flag) {
@@ -64,6 +66,9 @@ void loop() {
       space_flag = true;
       last_space_time = millis();
       cassette_drawing += 2;
+      color += 1;
+      if (color >= 4)
+        color = 0;
       if (cassette_drawing >= 10) {
         cassette_drawing = 0;
         drawing_index++;

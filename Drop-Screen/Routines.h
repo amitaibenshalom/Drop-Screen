@@ -18,7 +18,7 @@ bool check_drawing();
 bool check_drawing_3d();
 void do_encoder();
 int read_encoder();
-void led_on();
+void led_on(byte);
 void led_off();
 int calc_time_factor(byte);
 
@@ -128,12 +128,12 @@ void init_drawing(byte index) {
   led_start_flag = true;
   last_led_start = millis();
   if (full_light)
-    led_on();
+    led_on(color);
   else {
     if (led_start > 0)
       led_off();
     else
-      led_on();
+      led_on(color);
   }
   valve_on_flag = false;
   off_all_valves(num_of_valves);
@@ -149,12 +149,12 @@ void init_drawing_3d(byte index) {
   led_start_flag = true;
   last_led_start = millis();
   if (full_light)
-    led_on();
+    led_on(color);
   else {
     if (led_start > 0)
       led_off();
     else
-      led_on();
+      led_on(color);
   }
   valve_on_flag = false;
   off_all_valves(num_of_valves);
@@ -239,6 +239,8 @@ void do_encoder() {
   if (value == 0 && on_button && digitalRead(encoder_sw) == HIGH) {
     on_button = false;
     current_setting++;
+    if (current_setting == 2)
+      current_setting = 4;
     if (current_setting >= max_settings)
       current_setting = 0;
     display_settings();
@@ -278,11 +280,28 @@ void do_encoder() {
   }
 }
 
-void led_on() {
-  digitalWrite(led_pin, HIGH);
+void led_on(byte c) {
+  switch (c){
+    case 0:
+      analogWrite(red_led_pin, led_power);
+      break;
+    case 1:
+      analogWrite(green_led_pin, led_power);
+      break;
+    case 2:
+      analogWrite(blue_led_pin, led_power);
+      break;
+    case 3:
+      analogWrite(red_led_pin, led_power);
+      analogWrite(green_led_pin, led_power);
+      analogWrite(blue_led_pin, led_power);
+      break;
+  }
 }
 void led_off() {
-  digitalWrite(led_pin, LOW);
+  analogWrite(red_led_pin, 0);
+  analogWrite(red_led_pin, 0);
+  analogWrite(red_led_pin, 0);
 }
 
 #endif
