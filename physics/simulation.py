@@ -44,6 +44,14 @@ def get_avarage_lenth():
     sum += points[-1]
     return -sum / len(points)
 
+def get_total_length():
+    global height, g, N, points
+    sum = 0
+    for i in range(len(points)-1):
+        sum += points[i+1] - points[i]
+    sum += points[-1]
+    return -sum
+
 def get_error():
     global height, g, N, points
     av = get_avarage_lenth()
@@ -65,6 +73,7 @@ row = 0
 points = []
 last_avarage = 0
 last_error = 0
+last_total_length = 0
 starting_times = []
 time_per_row = []
 clock = pygame.time.Clock()
@@ -87,6 +96,7 @@ while running:
             if event.key == pygame.K_a:
                 print("Average length: {:.3f} meters".format(last_avarage))
                 print("Error: {:.3f}".format(last_error))
+                print("Total length: {:.1f} meters".format(last_total_length))
     if not water_on:
         water_on = True
         last_time = time.time()
@@ -100,6 +110,7 @@ while running:
             if row == N:
                 last_avarage = get_avarage_lenth()
                 last_error = get_error()
+                last_total_length = get_total_length()
                 draw_points()
                 time.sleep(pause_time)
                 screen.fill((0, 0, 0))
@@ -112,5 +123,3 @@ while running:
     for i in range(len(points)):
         points[i] = 0.5 * g * (time.time() - starting_times[i])**2 
     draw_points()
-
-
