@@ -21,6 +21,7 @@ void setup() {
   start_display();
   Serial.println("START");
   digitalWrite(SR_en_pin, LOW); 
+  update_height();
   drawing_index = 0;
   display_settings();
 }
@@ -32,7 +33,7 @@ void loop() {
   if (space_flag && millis() - last_space_time > space_time) {
     space_flag = false;
   }
-  if (valve_on_flag && millis() - last_valve_on > valve_on_time) {
+  if (valve_on_flag && millis() - last_valve_on > (auto_factor_flag ? auto_valve_on_time : valve_on_time)) {
     off_all_valves(num_of_valves); // without pulsing ST because layers should be continuous
     valve_on_flag = false;
   }

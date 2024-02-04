@@ -53,6 +53,48 @@ void display_settings(){
   display.println(full_light?"yes":"no");
   display.print(current_setting==6?">Type= ":" Type=");
   display.println(dim3_flag?"3D":"2D");
+  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
+  display.println(auto_factor_flag?"yes":"no");
+  display.display();
+}
+
+void display_settings2(){
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  switch(current_setting) {
+    case 0:
+      display.print("Valve_t=");
+      display.println(valve_on_time); 
+      break;
+    case 1:
+      display.print("Space_t=");
+      display.println(space_time); 
+      break;
+    case 2:
+      display.print("Led Start=");
+      display.println(led_start); 
+      break;
+    case 3:
+      display.print("Led Time=");
+      display.println(led_on_time); 
+      break;
+    case 4:
+      display.print("Depth=");
+      display.println(drawing_depth);
+      break;
+    case 5:
+      display.print("Full Light=");
+      display.println(full_light?"yes":"no");
+      break;
+    case 6:
+      display.print("Type=");
+      display.println(dim3_flag?"3D":"2D");
+      break;
+    case 7:
+      display.print("Auto factor=");
+      display.println(auto_factor_flag?"yes":"no");
+      break;
+  }
   display.display();
 }
 

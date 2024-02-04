@@ -40,6 +40,8 @@
 #define INTERNAL_LED 13
 #define BAUDRATE 115200
 
+float view_height = 1.5; // in meters
+const float g = 9.81; // m/s^2
 const byte max_cassettes = 32;
 const byte boards_per_cassette = 4;
 const byte valves_per_board = 16;
@@ -51,7 +53,7 @@ const uint16_t min_space_time = 0;
 const byte max_drawing_depth = max_cassettes; // number of rows producing the same frame together
 const byte min_drawing_depth = 1;
 const byte max_valve_on_time = 100; // how much time will the valve be on during one row of the frame
-const byte min_valve_on_time = 2;
+const byte min_valve_on_time = 1;
 const uint16_t max_led_start = 1000; // how much time will the led be offset by the frame
 const uint16_t min_led_start = 0;
 const uint16_t max_led_on_time = 1500; // how much time will the led be on during the frame
@@ -77,6 +79,7 @@ bool led_start_flag = false;
 bool led_on_flag = false;
 bool full_light = true;
 bool dim3_flag = false;
+bool auto_factor_flag = false; // true if you want the program to automatically factor the timming of the valves per row to match the drawing
 
 //uint32_t last_click = 0;
 uint32_t last_valve_on = 0;
@@ -85,14 +88,14 @@ uint32_t last_led_start = 0;
 uint32_t last_led_on = 0;
 
 byte current_setting = 0;
-const byte max_settings = 7;
+const byte max_settings = 8;
 byte old_encoder_read = 0;
 byte new_encoder_read = 0;
 signed int encoder_pos = 0;
 const byte prescaler = 2;
 
 float delay_tick = 1;
-
+int auto_valve_on_time = valve_on_time;
 
 // 'heart', 64x20px
 const byte heart [] PROGMEM = {
@@ -281,9 +284,9 @@ const byte hello [] PROGMEM = {
 };
 
 
-const byte drawings_num = 6; // number of drawings
+const byte drawings_num = 3; // number of drawings
 char* drawings[] = {
-  heart,heart0, star, star0, diamond,hello
+  heart0, star0, diamond
 };
 const byte drawings_num_3d = 1; // number of 3d drawings
 char* drawings_3d[] = {

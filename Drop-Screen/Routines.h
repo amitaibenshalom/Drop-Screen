@@ -20,6 +20,7 @@ void do_encoder();
 int read_encoder();
 void led_on();
 void led_off();
+int calc_time_factor(byte);
 
 void pulse_io(byte io_num) {
   digitalWrite(io_num, HIGH);
@@ -181,6 +182,8 @@ bool check_drawing() {
     }
     pulse_io(SR_st_pin);
     valve_on_flag = true;
+    if (auto_factor_flag)
+      auto_valve_on_time = calc_time_factor(row_in_drawing);
     last_valve_on = millis();
     row_in_drawing--;
   }
@@ -201,8 +204,13 @@ bool check_drawing_3d() {
   return false;
 }
 
-uint16_t calc_time_factor(byte row) {
-  
+int calc_time_factor(byte row) {
+  return int(sqrt(view_height/(image_h*g*(row + 0.5))) * 1000);
+}
+
+// update height for auto factoring
+void update_height() {
+  view_height = valve_on_time*valve_on_time*image_h*g*(image_h-0.5) / 1000000;  // adjusting units
 }
 
 int read_encoder() {
@@ -241,6 +249,7 @@ void do_encoder() {
     switch (current_setting) {
       case 0:
         valve_on_time += (valve_on_time == max_valve_on_time && value == 1 ? 0 : (valve_on_time == min_valve_on_time && value == -1 ? 0 : value * valve_on_time_step));
+        if (auto_factor_flag) update_height();
         break;
       case 1:
         space_time += (space_time == max_space_time && value == 1 ? 0 : (space_time == min_space_time && value == -1 ? 0 : value * space_time_step));
@@ -260,6 +269,9 @@ void do_encoder() {
       case 6:
         dim3_flag = !dim3_flag;
         drawing_flag = false;
+        break;
+      case 7:
+        auto_factor_flag = !auto_factor_flag;
         break;
     }
     display_settings();
