@@ -43,18 +43,20 @@ void display_settings(){
   display.println(valve_on_time);  
   display.print(current_setting==1?">Space Time= ":" Space Time=");
   display.println(space_time);
-//  display.print(current_setting==2?">Led Start= ":" Led Start=");
-//  display.println(led_start);
-//  display.print(current_setting==3?">Led Time= ":" Led Time=");
-//  display.println(led_on_time);
+  display.print(current_setting==2?">Led Start= ":" Led Start=");
+  display.println(led_start);
+  display.print(current_setting==3?">Led Time= ":" Led Time=");
+  display.println(led_on_time);
   display.print(current_setting==4?">Depth= ":" Depth=");
   display.println(drawing_depth);
   display.print(current_setting==5?">Full Light= ":" Full Light=");
   display.println(full_light?"yes":"no");
-  display.print(current_setting==6?">Type= ":" Type=");
-  display.println(dim3_flag?"3D":"2D");
-  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
-  display.println(auto_factor_flag?"yes":"no");
+//  display.print(current_setting==6?">Type= ":" Type=");
+//  display.println(dim3_flag?"3D":"2D");
+//  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
+//  display.println(auto_factor_flag?"yes":"no");
+  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
+  display.println(led_power);
   display.display();
 }
 
@@ -91,8 +93,8 @@ void display_settings2(){
       display.println(dim3_flag?"3D":"2D");
       break;
     case 7:
-      display.print("Auto factor=");
-      display.println(auto_factor_flag?"yes":"no");
+      display.print("Light PWM=");
+      display.println(led_power);
       break;
   }
   display.display();

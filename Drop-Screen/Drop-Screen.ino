@@ -12,8 +12,8 @@ void setup() {
   off_all_valves(num_of_valves);
   pulse_io(SR_st_pin);
   pinMode(encoder_sw, INPUT_PULLUP);
-  pinMode(encoder_pinA, INPUT); 
-  pinMode(encoder_pinB, INPUT); 
+  pinMode(encoder_pinA, INPUT_PULLUP); 
+  pinMode(encoder_pinB, INPUT_PULLUP); 
   pinMode(red_led_pin, OUTPUT);
   pinMode(green_led_pin, OUTPUT);
   pinMode(blue_led_pin, OUTPUT);

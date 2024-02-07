@@ -239,8 +239,8 @@ void do_encoder() {
   if (value == 0 && on_button && digitalRead(encoder_sw) == HIGH) {
     on_button = false;
     current_setting++;
-    if (current_setting == 2)
-      current_setting = 4;
+    if (current_setting == 6)
+      current_setting = 7;
     if (current_setting >= max_settings)
       current_setting = 0;
     display_settings();
@@ -272,8 +272,11 @@ void do_encoder() {
         dim3_flag = !dim3_flag;
         drawing_flag = false;
         break;
+//      case 7:
+//        auto_factor_flag = !auto_factor_flag;
+//        break;
       case 7:
-        auto_factor_flag = !auto_factor_flag;
+        led_power += (led_power == max_led_power && value == 1 ? 0 : (led_power == min_led_power && value == -1 ? 0 : value * led_power_step));
         break;
     }
     display_settings();
@@ -281,6 +284,7 @@ void do_encoder() {
 }
 
 void led_on(byte c) {
+  led_off();
   switch (c){
     case 0:
       analogWrite(red_led_pin, led_power);
@@ -300,8 +304,8 @@ void led_on(byte c) {
 }
 void led_off() {
   analogWrite(red_led_pin, 0);
-  analogWrite(red_led_pin, 0);
-  analogWrite(red_led_pin, 0);
+  analogWrite(green_led_pin, 0);
+  analogWrite(blue_led_pin, 0);
 }
 
 #endif

@@ -40,24 +40,28 @@ def process_and_save_image(input_path, output_path):
     # Check if the image was successfully loaded
     if image is not None:
         # Convert the image to grayscale
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        resized_image = cv2.resize(image, (64, 20))
+
+        gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
+
+        
 
         # Apply binary thresholding to create a black and white image
         _, bw_image = cv2.threshold(gray_image, 100, 255, cv2.THRESH_BINARY)
 
         # Resize the image to 64x20 pixels
-        resized_image = cv2.resize(bw_image, (64, 20))
 
         # Save the processed image
-        cv2.imwrite(output_path, resized_image)
+        cv2.imwrite(output_path, bw_image)
         print('Image processed and saved successfully.')
     else:
         print('Error loading the image.')
 
 # Replace 'input_image.jpg' with the path to your input image file
 # Replace 'output_image.jpg' with the desired filename for the processed image
-in_path = 'D:\Amitai_D\museum\drop_screen\Drop-Screen\camera\pictures_from_camera\hand.jpg'
-out_path = 'D:\Amitai_D\museum\drop_screen\Drop-Screen\camera\pictures_from_camera\hand_bw.jpg'
+in_path = 'D:\Amitai_D\museum\drop_screen\Drop-Screen\camera\pictures_from_camera\hand2.jpg'
+out_path = 'D:\Amitai_D\museum\drop_screen\Drop-Screen\camera\pictures_from_camera\hand_bw2.jpg'
 process_and_save_image(in_path, out_path)
 
 
@@ -65,24 +69,24 @@ process_and_save_image(in_path, out_path)
 
 
 # cap = cv2.VideoCapture(0)
-running = False
-while(running):
-    if keyboard.is_pressed("q"):
-        running = False
-    elif keyboard.is_pressed("p"):
-        img = take_picture()
-        if img is None:
-            print("Error: Could not take picture")
-            continue
-        cv2.imshow("Picture", img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        os.makedirs("pictures_from_camera", exist_ok=True)
-        path = os.path.join("pictures_from_camera",time_stamp + ".png")
-        cv2.imwrite(path, img)
-        byte_list = image_to_water(path)
-        if byte_list:
-            print(f"Byte list representing the image: {byte_list}")
+# running = False
+# while(running):
+#     if keyboard.is_pressed("q"):
+#         running = False
+#     elif keyboard.is_pressed("p"):
+#         img = take_picture()
+#         if img is None:
+#             print("Error: Could not take picture")
+#             continue
+#         cv2.imshow("Picture", img)
+#         cv2.waitKey(0)
+#         cv2.destroyAllWindows()
+#         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+#         os.makedirs("pictures_from_camera", exist_ok=True)
+#         path = os.path.join("pictures_from_camera",time_stamp + ".png")
+#         cv2.imwrite(path, img)
+#         byte_list = image_to_water(path)
+#         if byte_list:
+#             print(f"Byte list representing the image: {byte_list}")
 
 
