@@ -67,7 +67,7 @@ void loop() {
       last_space_time = millis();
       cassette_drawing += 2;
       color += 1;
-      if (color >= 4)
+      if (color >= colors_num)
         color = 0;
       if (cassette_drawing >= 10) {
         cassette_drawing = 0;
