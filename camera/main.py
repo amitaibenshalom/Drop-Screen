@@ -1,92 +1,115 @@
 import os
 from typing import List
-from PIL import Image
+# from PIL import Image
 from datetime import datetime
 import cv2
-import keyboard
+import time
+import pygame
+from pygame.locals import *
 
-# a function that takes an image from a file and makes it black and white (no grayscale), for example, by setting all pixels with a brightness greater than 128 to white and all pixels with a brightness less than or equal to 128 to black. The function should return the modified image as a list of bytes. The function should have the following signature: def black_and_white(image_path: str) -> List[int]: where image_path is the path to the image file and List is the list type from the typing module. The function should use the PIL library to work with images. The function should return None if the image cannot be opened or if the image cannot be converted to black and white. The function should not modify the original image file.
-def image_to_water(image_path: str) -> List[int]:
-    try:
-        with Image.open(image_path) as img:
-            img = img.convert("L")
-            img = img.point(lambda p: p > 128 and 255)
-            
-            # reduce the size of the image to 64x20
-            img = img.resize((64, 20))
-
-            img_bytes = img.tobytes()
-            byte_list = list(img_bytes)
-            return byte_list
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+def img_to_byte(img_path):
+    with open(img_path, "rb") as img_file:
+        byte_list = img_file.read()
+    return byte_list
     
-
 def take_picture():
     global cap
     ret, frame = cap.read()
-    cap.release()
-    cv2.destroyAllWindows()
     if ret:
         return frame
     return None
 
 
 def process_and_save_image(input_path, output_path):
-    # Read the image from the given path
+    global time_per_caputure, trheshold
     image = cv2.imread(input_path)
-
-    # Check if the image was successfully loaded
     if image is not None:
-        # Convert the image to grayscale
-
         resized_image = cv2.resize(image, (64, 20))
-
         gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-
-        
-
         # Apply binary thresholding to create a black and white image
-        _, bw_image = cv2.threshold(gray_image, 100, 255, cv2.THRESH_BINARY)
-
-        # Resize the image to 64x20 pixels
-
-        # Save the processed image
+        _, bw_image = cv2.threshold(gray_image, trheshold, 255, cv2.THRESH_BINARY)
         cv2.imwrite(output_path, bw_image)
-        print('Image processed and saved successfully.')
+        if time_per_caputure >= 1:
+            print('Image processed and saved successfully.')
+        return img_to_byte(output_path)
     else:
         print('Error loading the image.')
-
-# Replace 'input_image.jpg' with the path to your input image file
-# Replace 'output_image.jpg' with the desired filename for the processed image
-in_path = 'D:\Amitai_D\museum\drop_screen\Drop-Screen\camera\pictures_from_camera\hand2.jpg'
-out_path = 'D:\Amitai_D\museum\drop_screen\Drop-Screen\camera\pictures_from_camera\hand_bw2.jpg'
-process_and_save_image(in_path, out_path)
+        return None
 
 
+folder_name = "pictures_from_camera"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+folder_name = os.path.join(current_dir, folder_name)
+
+cap = cv2.VideoCapture(1)
+if not cap.isOpened():
+    print("Error: Could not open camera.")
+    exit()
+camera_on = False
+time_per_caputure = 4
+last_capture = time.time()
+trheshold = 70
+
+pygame.init()
+screen = pygame.display.set_mode((1280, 480))
+pygame.display.set_caption("Camera")
+
+running = True
+while(running):
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+            cap.release()
+            cv2.destroyAllWindows()
+            print("quitting...")
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE or event.key == K_q:
+                running = False
+                cap.release()
+                cv2.destroyAllWindows()
+                print("quitting...")
+            if event.key == K_p:
+                camera_on = not camera_on
+                print(f"Camera is {'on' if camera_on else 'off'}")
+                last_capture = time.time()
+            if event.key == K_RIGHT:
+                trheshold += 10
+                print(f"Threshold: {trheshold}")
+            if event.key == K_LEFT:
+                trheshold -= 10
+                print(f"Threshold: {trheshold}")
+    if camera_on and time.time() - last_capture >= time_per_caputure:
+        img = take_picture()
+        last_capture = time.time()
+        if img is None:
+            print("Error: Could not take picture")
+        img = cv2.flip(img, 0)
+        # cv2.imshow("Picture", img)
+        time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        os.makedirs(folder_name, exist_ok=True)
+        in_path = os.path.join(folder_name,time_stamp + ".png")
+        out_path = os.path.join(folder_name,time_stamp + "_bw.png")
+        cv2.imwrite(in_path, img)
+        byte_list = process_and_save_image(in_path, out_path)
+        if byte_list:
+            # print(f"Byte list representing the image: {byte_list}")
+            pass
+        # show on screen the image
+        screen.fill((0, 0, 0))
+        image_display = pygame.image.load(in_path)
+        image_bw_display = pygame.image.load(out_path)
+        image_bw_display = pygame.transform.scale(image_bw_display, (640, 480))
+        screen.blit(image_display, (0, 0))
+        screen.blit(image_bw_display, (640, 0))
+        pygame.display.flip()
+        if time_per_caputure < 1:
+            # delete images
+            os.remove(in_path)
+            os.remove(out_path)
+    elif not camera_on:
+        screen.fill((0, 0, 0))
+        pygame.display.flip()
 
 
-
-# cap = cv2.VideoCapture(0)
-# running = False
-# while(running):
-#     if keyboard.is_pressed("q"):
-#         running = False
-#     elif keyboard.is_pressed("p"):
-#         img = take_picture()
-#         if img is None:
-#             print("Error: Could not take picture")
-#             continue
-#         cv2.imshow("Picture", img)
-#         cv2.waitKey(0)
-#         cv2.destroyAllWindows()
-#         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-#         os.makedirs("pictures_from_camera", exist_ok=True)
-#         path = os.path.join("pictures_from_camera",time_stamp + ".png")
-#         cv2.imwrite(path, img)
-#         byte_list = image_to_water(path)
-#         if byte_list:
-#             print(f"Byte list representing the image: {byte_list}")
-
-
+cap.release()
+cv2.destroyAllWindows()
