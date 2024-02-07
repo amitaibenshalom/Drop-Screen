@@ -5,6 +5,7 @@ from datetime import datetime
 import cv2
 import time
 import pygame
+import numpy as np
 from pygame.locals import *
 
 def img_to_byte(img_path):
@@ -21,7 +22,7 @@ def take_picture():
 
 
 def process_and_save_image(input_path, output_path):
-    global time_per_caputure, trheshold
+    global time_per_caputure, log
     image = cv2.imread(input_path)
     if image is not None:
         resized_image = cv2.resize(image, (64, 20))
@@ -29,9 +30,24 @@ def process_and_save_image(input_path, output_path):
         # Apply binary thresholding to create a black and white image
         _, bw_image = cv2.threshold(gray_image, trheshold, 255, cv2.THRESH_BINARY)
         cv2.imwrite(output_path, bw_image)
-        if time_per_caputure >= 1:
+        flattened_array = bw_image.flatten()
+        if log:
+            print("len(flattened_array): ", len(flattened_array))
+        byte_array = bytearray()
+        for i in range(0, len(flattened_array), 8):
+            if i % 64 == 0 and log:
+                print()
+            byte_value = 0
+            for j in range(8):
+                pixel_value = flattened_array[i + j]
+                byte_value |= (pixel_value & 1) << (7 - j)
+                if log:
+                    print(" " if (pixel_value & 1) else "#", end="")
+            byte_array.append(byte_value)
+        if log:
             print('Image processed and saved successfully.')
-        return img_to_byte(output_path)
+            print("\n\n len(byte_array): ", len(byte_array))
+        return byte_array
     else:
         print('Error loading the image.')
         return None
@@ -46,9 +62,10 @@ if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
 camera_on = False
-time_per_caputure = 4
+time_per_caputure = 5
 last_capture = time.time()
 trheshold = 70
+log = time_per_caputure > 7
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 480))
@@ -91,9 +108,6 @@ while(running):
         out_path = os.path.join(folder_name,time_stamp + "_bw.png")
         cv2.imwrite(in_path, img)
         byte_list = process_and_save_image(in_path, out_path)
-        if byte_list:
-            # print(f"Byte list representing the image: {byte_list}")
-            pass
         # show on screen the image
         screen.fill((0, 0, 0))
         image_display = pygame.image.load(in_path)
@@ -102,7 +116,7 @@ while(running):
         screen.blit(image_display, (0, 0))
         screen.blit(image_bw_display, (640, 0))
         pygame.display.flip()
-        if time_per_caputure < 1:
+        if not log:
             # delete images
             os.remove(in_path)
             os.remove(out_path)
