@@ -283,24 +283,11 @@ void do_encoder() {
   }
 }
 
-void led_on(byte c) {
+void led_on(byte index) {
   led_off();
-  switch (c){
-    case 0:
-      analogWrite(red_led_pin, led_power);
-      break;
-    case 1:
-      analogWrite(green_led_pin, led_power);
-      break;
-    case 2:
-      analogWrite(blue_led_pin, led_power);
-      break;
-    case 3:
-      analogWrite(red_led_pin, led_power);
-      analogWrite(green_led_pin, led_power);
-      analogWrite(blue_led_pin, led_power);
-      break;
-  }
+  analogWrite(red_led_pin, colors[index][0]);
+  analogWrite(green_led_pin, colors[index][1]);
+  analogWrite(blue_led_pin, colors[index][2]);
 }
 void led_off() {
   analogWrite(red_led_pin, 0);

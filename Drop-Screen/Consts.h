@@ -76,7 +76,9 @@ uint16_t led_start = 350;
 uint16_t led_on_time = 550;
 byte drawing_depth = 4;
 byte color = 0; // 0 - red, 1 - green, 2 - blue, 3 - white
+byte colors[][3] = {{255,75,75},{90,255,90},{219,97,255},{255,255,255}};
 byte led_power = 255; // for PWM
+byte colors_num = 4;
          
 bool on_button = false;
 bool drawing_flag = false;
