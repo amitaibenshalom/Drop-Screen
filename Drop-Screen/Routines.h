@@ -74,7 +74,7 @@ void array_to_valves_progmem(byte d_index, byte r_index, bool reverse) {
       byte byteValue = pgm_read_byte(&drawings[d_index][r_index * 8 + i]);
       for (int i = 0; i < 8; i++) {
         bool bitValue = bitRead(byteValue, i);
-        //Serial.print(bitValue == true ? " " : "#");
+        Serial.print(bitValue == true ? " " : "#");
         digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
         pulse_io(SR_clk_pin);
       }
@@ -85,13 +85,13 @@ void array_to_valves_progmem(byte d_index, byte r_index, bool reverse) {
       byte byteValue = pgm_read_byte(&drawings[d_index][r_index * 8 + i]);
       for (int i = 7; i >= 0; i--) {
         bool bitValue = bitRead(byteValue, i);
-        //Serial.print(bitValue == true ? " " : "#");
+        Serial.print(bitValue == true ? " " : "#");
         digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
         pulse_io(SR_clk_pin);
       }
     }
   }
-  //Serial.println();
+  Serial.println();
 }
 
 void array_to_valves_progmem_3d(byte d_index, byte l_index) {

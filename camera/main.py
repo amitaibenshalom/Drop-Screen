@@ -1,4 +1,5 @@
 import os
+import serial
 from typing import List
 # from PIL import Image
 from datetime import datetime
@@ -7,11 +8,6 @@ import time
 import pygame
 import numpy as np
 from pygame.locals import *
-
-def img_to_byte(img_path):
-    with open(img_path, "rb") as img_file:
-        byte_list = img_file.read()
-    return byte_list
     
 def take_picture():
     global cap
@@ -21,6 +17,23 @@ def take_picture():
     return None
 
 
+def send_to_arduino(byte_list):
+    global arduino
+    if arduino is not None:
+        # for each byte in the byte list send it to the arduino
+        for i in range(len(byte_list)):
+            arduino.write(byte_list[i])
+            if (i + 1) % 8 == 0:
+                response = arduino.read(1, 0.1)
+                if response is not None:
+                    print(response)
+                else:
+                    print('Error: No response from Arduino')
+        print('Data sent to Arduino')
+    else:
+        print('Error: Arduino not connected')
+
+
 def process_and_save_image(input_path, output_path):
     global time_per_caputure, log
     image = cv2.imread(input_path)
@@ -28,7 +41,7 @@ def process_and_save_image(input_path, output_path):
         resized_image = cv2.resize(image, (64, 20))
         gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         # Apply binary thresholding to create a black and white image
-        _, bw_image = cv2.threshold(gray_image, trheshold, 255, cv2.THRESH_BINARY)
+        _, bw_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
         cv2.imwrite(output_path, bw_image)
         flattened_array = bw_image.flatten()
         if log:
@@ -57,6 +70,19 @@ folder_name = "pictures_from_camera"
 current_dir = os.path.dirname(os.path.abspath(__file__))
 folder_name = os.path.join(current_dir, folder_name)
 
+port = 'COM4'
+baudrate = 115200
+arduino = None
+
+try:
+    arduino = serial.Serial(port, baudrate)
+    found_arduino = True
+    print("Found Arduino")
+except Exception as e:
+    print(f"Serial port error: {e}")
+    print('ARDUINO NOT CONNECTED')
+    exit()
+
 cap = cv2.VideoCapture(1)
 if not cap.isOpened():
     print("Error: Could not open camera.")
@@ -64,7 +90,7 @@ if not cap.isOpened():
 camera_on = False
 time_per_caputure = 5
 last_capture = time.time()
-trheshold = 70
+threshold = 70
 log = time_per_caputure > 7
 
 pygame.init()
@@ -90,11 +116,11 @@ while(running):
                 print(f"Camera is {'on' if camera_on else 'off'}")
                 last_capture = time.time()
             if event.key == K_RIGHT:
-                trheshold += 10
-                print(f"Threshold: {trheshold}")
+                threshold += 10
+                print(f"Threshold: {threshold}")
             if event.key == K_LEFT:
-                trheshold -= 10
-                print(f"Threshold: {trheshold}")
+                threshold -= 10
+                print(f"Threshold: {threshold}")
     if camera_on and time.time() - last_capture >= time_per_caputure:
         img = take_picture()
         last_capture = time.time()
