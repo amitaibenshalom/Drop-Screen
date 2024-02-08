@@ -7,6 +7,7 @@ import cv2
 import time
 import pygame
 import numpy as np
+import struct
 from pygame.locals import *
     
 def take_picture():
@@ -17,21 +18,62 @@ def take_picture():
     return None
 
 
+def send_one_number(value):
+    try:
+        arduino.write(value)
+        # arduino.flush() 
+    except Exception:
+        print(f"{ord(value)} not sent")
+        return False
+    # print(f"sent {value}")
+    return True
+
+
 def send_to_arduino(byte_list):
     global arduino
-    if arduino is not None:
-        # for each byte in the byte list send it to the arduino
-        for i in range(len(byte_list)):
-            arduino.write(byte_list[i])
-            if (i + 1) % 8 == 0:
-                response = arduino.read(1, 0.1)
-                if response is not None:
-                    print(response)
-                else:
-                    print('Error: No response from Arduino')
-        print('Data sent to Arduino')
+
+    arduino.flush()
+    arduino.reset_input_buffer()
+    arduino.reset_output_buffer()
+    # while arduino.in_waiting > 0:
+    #     print(arduino.read(1))
+
+    print('Sending data to Arduino!!!!!!!')
+    # send START KEY ('s')
+    arduino.write('s'.encode())
+    response = arduino.read()
+    if response is not None:
+        print(chr(ord(response)))
     else:
-        print('Error: Arduino not connected')
+        print('Error: No response from Arduino')
+        return False
+
+    for i in range(len(byte_list)):
+        # send the byte to the arduino
+        # print(ord(byte_list[i]))
+        # print(f"Sending {i+1}/{len(byte_list)}")
+        print(f"----  {bytearray([byte_list[i]]).hex()}  ----")
+        if not send_one_number(bytearray([byte_list[i]])):
+            print(f"Error: Could not send {ord(byte_list[i])}")
+            return False
+        response = arduino.readline()
+        if response is not None and len(response) > 0:
+            print(response.decode(), end="")
+        else:
+            print('Error: No response from Arduino')
+            return False
+        if (i+1) % 8 == 0:
+            print()
+            response = arduino.read()
+            if response is not None:
+                # print(chr(ord(response)))
+                pass
+            else:
+                print('Error: No response from Arduino')
+                return False
+        
+    print('Data sent to Arduino')
+    return True
 
 
 def process_and_save_image(input_path, output_path):
@@ -46,7 +88,7 @@ def process_and_save_image(input_path, output_path):
         flattened_array = bw_image.flatten()
         if log:
             print("len(flattened_array): ", len(flattened_array))
-        byte_array = bytearray()
+        arr = []
         for i in range(0, len(flattened_array), 8):
             if i % 64 == 0 and log:
                 print()
@@ -56,7 +98,8 @@ def process_and_save_image(input_path, output_path):
                 byte_value |= (pixel_value & 1) << (7 - j)
                 if log:
                     print(" " if (pixel_value & 1) else "#", end="")
-            byte_array.append(byte_value)
+            arr.append(byte_value)
+        byte_array = bytearray(arr)
         if log:
             print('Image processed and saved successfully.')
             print("\n\n len(byte_array): ", len(byte_array))
@@ -75,7 +118,7 @@ baudrate = 115200
 arduino = None
 
 try:
-    arduino = serial.Serial(port, baudrate)
+    arduino = serial.Serial(port, baudrate, timeout=1)
     found_arduino = True
     print("Found Arduino")
 except Exception as e:
@@ -88,7 +131,7 @@ if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
 camera_on = False
-time_per_caputure = 5
+time_per_caputure = 8
 last_capture = time.time()
 threshold = 70
 log = time_per_caputure > 7
@@ -97,8 +140,24 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 480))
 pygame.display.set_caption("Camera")
 
+# clear Serial buffer
+arduino.reset_input_buffer()
+arduino.reset_output_buffer()
+
+str = ""
 running = True
 while(running):
+
+    # read EVERYTHING from the serial buffer and print it
+    # response = arduino.read_all()
+    # if response is not None and len(response) > 10 and str == "":
+    #     str += response.decode()
+    # elif response is not None and len(response) > 10 and str != "":
+    #     str += response.decode()
+    #     print(str)
+    #     str = ""
+        
+
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
@@ -142,10 +201,15 @@ while(running):
         screen.blit(image_display, (0, 0))
         screen.blit(image_bw_display, (640, 0))
         pygame.display.flip()
-        if not log:
-            # delete images
-            os.remove(in_path)
-            os.remove(out_path)
+        # delete images
+        os.remove(in_path)
+        os.remove(out_path)
+        if byte_list is not None:
+            print(byte_list)
+            print("sending to arduino")
+            send_to_arduino(byte_list)
+            last_capture = time.time()
+
     elif not camera_on:
         screen.fill((0, 0, 0))
         pygame.display.flip()
