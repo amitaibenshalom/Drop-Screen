@@ -38,12 +38,14 @@ def send_to_arduino(byte_list):
     # while arduino.in_waiting > 0:
     #     print(arduino.read(1))
 
-    print('Sending data to Arduino!!!!!!!')
+    if log:
+        print('Sending data to Arduino!!!!!!!')
     # send START KEY ('s')
     arduino.write('s'.encode())
     response = arduino.read()
     if response is not None:
-        print(chr(ord(response)))
+        if log:
+            print(chr(ord(response)))
     else:
         print('Error: No response from Arduino')
         return False
@@ -52,18 +54,21 @@ def send_to_arduino(byte_list):
         # send the byte to the arduino
         # print(ord(byte_list[i]))
         # print(f"Sending {i+1}/{len(byte_list)}")
-        print(f"----  {bytearray([byte_list[i]]).hex()}  ----")
+        if log:
+            print(f"----  {bytearray([byte_list[i]]).hex()}  ----")
         if not send_one_number(bytearray([byte_list[i]])):
             print(f"Error: Could not send {ord(byte_list[i])}")
             return False
         response = arduino.readline()
         if response is not None and len(response) > 0:
-            print(response.decode(), end="")
+            if log:
+                print(response.decode(), end="")
         else:
             print('Error: No response from Arduino')
             return False
         if (i+1) % 8 == 0:
-            print()
+            if log:
+                print()
             response = arduino.read()
             if response is not None:
                 # print(chr(ord(response)))
@@ -71,8 +76,8 @@ def send_to_arduino(byte_list):
             else:
                 print('Error: No response from Arduino')
                 return False
-        
-    print('Data sent to Arduino')
+    if log:
+        print('Data sent to Arduino')
     return True
 
 
@@ -113,7 +118,7 @@ folder_name = "pictures_from_camera"
 current_dir = os.path.dirname(os.path.abspath(__file__))
 folder_name = os.path.join(current_dir, folder_name)
 
-port = 'COM4'
+port = 'COM3'
 baudrate = 115200
 arduino = None
 
@@ -131,7 +136,7 @@ if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
 camera_on = False
-time_per_caputure = 8
+time_per_caputure = 5
 last_capture = time.time()
 threshold = 70
 log = time_per_caputure > 7
@@ -205,8 +210,9 @@ while(running):
         os.remove(in_path)
         os.remove(out_path)
         if byte_list is not None:
-            print(byte_list)
-            print("sending to arduino")
+            if log:
+                print(byte_list)
+                print("sending to arduino")
             send_to_arduino(byte_list)
             last_capture = time.time()
 

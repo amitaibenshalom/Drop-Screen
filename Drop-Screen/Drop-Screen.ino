@@ -99,6 +99,7 @@ void loop() {
       off_all_valves(num_of_valves);
       pulse_io(SR_st_pin);
       space_flag = true;
+      drawing_flag = false;
       last_space_time = millis();
       cassette_drawing += 2;
       color += 1;
@@ -106,7 +107,6 @@ void loop() {
         color = 0;
       if (cassette_drawing >= cassettes_num) {
         cassette_drawing = 0;
-        drawing_flag = false;
 //        drawing_index++;
 //        if (drawing_index >= drawings_num)
 //          drawing_index = 0;

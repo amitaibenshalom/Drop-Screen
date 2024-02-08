@@ -4,19 +4,19 @@
 #include <avr/pgmspace.h>
 
 #define SR_st_pin 4 // 74HC565 shift register strob pin (12) - active high (low/hig/low pulse shift Sr vector to outputs)make sure set low during "push"data in
-#define SR_clk_pin 5 // 74HC565 shift clock pin (11) - active high (low/high/low pulse shift data in) make sure initaly set to low 
-#define SR_data_pin 6 // 74HC565 Data in pin (14)  
-#define SR_en_pin 3 // 74HC565 out put enable pin (13) - active low 
-#define encoder_pinA 11
-#define encoder_pinB 12
-#define encoder_sw 10
-#define red_led_pin 7
-#define green_led_pin 7
-#define blue_led_pin 7
+#define SR_clk_pin 13 // 74HC565 shift clock pin (11) - active high (low/high/low pulse shift data in) make sure initaly set to low 
+#define SR_data_pin 11 // 74HC565 Data in pin (14)  
+#define SR_en_pin 7 // 74HC565 out put enable pin (13) - active low 
+#define encoder_pinA 2
+#define encoder_pinB 3
+#define encoder_sw 8
+#define red_led_pin 5
+#define green_led_pin 6
+#define blue_led_pin 9
 
 #define image_w 64
 #define image_h 20
-#define cassettes_num 2
+#define cassettes_num 10
 #define START_KEY 's'
 
 #define INTERNAL_LED 13
@@ -50,7 +50,7 @@ const uint16_t led_start_step = 10;
 const uint16_t led_on_time_step = 10;
 const byte led_power_step = 5;
 
-byte valve_on_time = 255;
+byte valve_on_time = 5;
 uint16_t space_time = 750;
 uint16_t led_start = 350;
 uint16_t led_on_time = 550;
@@ -66,7 +66,7 @@ bool valve_on_flag = false;
 bool space_flag = false;
 bool led_start_flag = false;
 bool led_on_flag = false;
-bool full_light = false;
+bool full_light = true;
 bool dim3_flag = false;
 bool auto_factor_flag = false; // true if you want the program to automatically factor the timming of the valves per row to match the drawing
 
