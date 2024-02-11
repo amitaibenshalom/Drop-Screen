@@ -82,7 +82,7 @@ def send_to_arduino(byte_list):
 
 
 def process_and_save_image(input_path, output_path):
-    global time_per_caputure, log
+    global time_per_caputure, log, arduin
     image = cv2.imread(input_path)
     if image is not None:
         resized_image = cv2.resize(image, (64, 20))
@@ -118,27 +118,31 @@ folder_name = "pictures_from_camera"
 current_dir = os.path.dirname(os.path.abspath(__file__))
 folder_name = os.path.join(current_dir, folder_name)
 
-port = 'COM3'
+port = 'COM4'
 baudrate = 115200
 arduino = None
+
+camera_on = False
+time_per_caputure = 3
+last_capture = time.time()
+threshold = 70
 
 try:
     arduino = serial.Serial(port, baudrate, timeout=1)
     found_arduino = True
     print("Found Arduino")
 except Exception as e:
+    found_arduino = False
+    time_per_caputure = 0
     print(f"Serial port error: {e}")
     print('ARDUINO NOT CONNECTED')
-    exit()
+    # exit()
 
 cap = cv2.VideoCapture(1)
 if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
-camera_on = False
-time_per_caputure = 5
-last_capture = time.time()
-threshold = 70
+
 log = time_per_caputure > 7
 
 pygame.init()
@@ -146,8 +150,9 @@ screen = pygame.display.set_mode((1280, 480))
 pygame.display.set_caption("Camera")
 
 # clear Serial buffer
-arduino.reset_input_buffer()
-arduino.reset_output_buffer()
+if found_arduino:
+    arduino.reset_input_buffer()
+    arduino.reset_output_buffer()
 
 str = ""
 running = True
@@ -209,7 +214,7 @@ while(running):
         # delete images
         os.remove(in_path)
         os.remove(out_path)
-        if byte_list is not None:
+        if found_arduino and byte_list is not None:
             if log:
                 print(byte_list)
                 print("sending to arduino")
