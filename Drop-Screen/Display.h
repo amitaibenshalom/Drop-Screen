@@ -55,8 +55,8 @@ void display_settings(){
 //  display.println(dim3_flag?"3D":"2D");
 //  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
 //  display.println(auto_factor_flag?"yes":"no");
-  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
-  display.println(led_power);
+//  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
+//  display.println(led_power);
   display.display();
 }
 
