@@ -1,15 +1,27 @@
 import os
+import platform
 import serial
 from typing import List
-# from PIL import Image
 from datetime import datetime
 import cv2
 import time
 import pygame
 import numpy as np
-import struct
 from pygame.locals import *
-    
+
+
+# display message on screen
+def msg_on_screen():
+    global font, screen, screen_width, screen_height, text, font_size
+    y_position = screen_height // 2 - len(text) * font_size // 2
+    for line in text:
+        text_surface = font.render(line, True, (255, 255, 255))
+        text_rect = text_surface.get_rect()
+        text_rect.center = (screen_width // 2, y_position)
+        screen.blit(text_surface, text_rect)
+        y_position += font_size
+
+
 def take_picture():
     global cap
     ret, frame = cap.read()
@@ -35,9 +47,6 @@ def send_to_arduino(byte_list):
     arduino.flush()
     arduino.reset_input_buffer()
     arduino.reset_output_buffer()
-    # while arduino.in_waiting > 0:
-    #     print(arduino.read(1))
-
     if log:
         print('Sending data to Arduino!!!!!!!')
     # send START KEY ('s')
@@ -115,17 +124,20 @@ def process_and_save_image(input_path, output_path):
 
 
 folder_name = "pictures_from_camera"
-current_dir = os.path.dirname(os.path.abspath(__file__))
-folder_name = os.path.join(current_dir, folder_name)
+folder_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), folder_name)
 
-port = 'COM4'
+port = 'COM4'  # change this to the port where the arduino is connected
+if platform.system() == "Linux":
+    port = '/dev/ttyACM0'
+
 baudrate = 115200
+save_picture = False # change this to True if you want to save the pictures taken by the camera - not recommended
 arduino = None
 
 camera_on = False
 time_per_caputure = 3
 last_capture = time.time()
-threshold = 70
+threshold = 70 # 70 is a good value for the threshold to convert the image to black and white
 
 try:
     arduino = serial.Serial(port, baudrate, timeout=1)
@@ -138,13 +150,14 @@ except Exception as e:
     print('ARDUINO NOT CONNECTED')
     # exit()
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(1) # 0 is the default camera on the computer, change it to the camera you want to use
 if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
 
-log = time_per_caputure > 7
+log = time_per_caputure > 7  # only write print statements if taking each picture takes more than 7 seconds to avoid spamming the console
 
+screen_width, screen_height = 1280, 480
 pygame.init()
 screen = pygame.display.set_mode((1280, 480))
 pygame.display.set_caption("Camera")
@@ -154,19 +167,15 @@ if found_arduino:
     arduino.reset_input_buffer()
     arduino.reset_output_buffer()
 
+font_size = 40
+font = pygame.font.Font(None, font_size)  # Use default system font
+text0 = "Press P to start/stop camera mode"
+text1 = "Press RIGHT/LEFT to change threshold for black and white filter"
+text2 = "Arduino not found" if not found_arduino else "Arduino found"
+text = [text0, text1, text2]
 str = ""
 running = True
 while(running):
-
-    # read EVERYTHING from the serial buffer and print it
-    # response = arduino.read_all()
-    # if response is not None and len(response) > 10 and str == "":
-    #     str += response.decode()
-    # elif response is not None and len(response) > 10 and str != "":
-    #     str += response.decode()
-    #     print(str)
-    #     str = ""
-        
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -196,7 +205,6 @@ while(running):
         if img is None:
             print("Error: Could not take picture")
         img = cv2.flip(img, 0)
-        # cv2.imshow("Picture", img)
         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         os.makedirs(folder_name, exist_ok=True)
         in_path = os.path.join(folder_name,time_stamp + ".png")
@@ -211,9 +219,10 @@ while(running):
         screen.blit(image_display, (0, 0))
         screen.blit(image_bw_display, (640, 0))
         pygame.display.flip()
-        # delete images
-        os.remove(in_path)
-        os.remove(out_path)
+        # delete images if not saving, or if the time to take the picture is less than 5 seconds for not saving too many images in a short time
+        if not save_picture or time_per_caputure < 5:
+            os.remove(in_path)
+            os.remove(out_path)
         if found_arduino and byte_list is not None:
             if log:
                 print(byte_list)
@@ -223,6 +232,7 @@ while(running):
 
     elif not camera_on:
         screen.fill((0, 0, 0))
+        msg_on_screen()
         pygame.display.flip()
 
 
