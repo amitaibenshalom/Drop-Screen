@@ -137,8 +137,10 @@ def process_and_save_image(input_path, output_path):
 folder_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), folder_name_for_saved_pictures)
 idle_folder_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), folder_name_for_idle_pictures)
 arduino = None
-camera_on = False
+camera_on = True
 camera_working = False
+time_per_caputure = time_per_caputure_default
+time_per_caputure_idle = 1
 last_capture = time.time()
 
 try:
@@ -216,6 +218,7 @@ while(running):
             if event.key == K_LEFT:
                 threshold -= 10
                 print(f"Threshold: {threshold}")
+
     if camera_on and time.time() - last_capture >= time_per_caputure:
         img = take_picture()
         last_capture = time.time()
@@ -242,7 +245,18 @@ while(running):
         screen.blit(image_display, (0, 0))
         screen.blit(image_bw_display, (640, 0))
         pygame.display.flip()
+    
+        if black_percentage <= empty_image_threshold:
+            byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
+            sample_index += 1
+            if sample_index >= len(idle_images):
+                sample_index = 0
+            time_per_caputure = time_per_caputure_idle
+        else:
+            time_per_caputure = time_per_caputure_default
+
         if found_arduino and byte_list is not None and black_percentage > empty_image_threshold:
+            time_per_caputure = time_per_caputure_default
             if log:
                 # print(byte_list)
                 print("sending to arduino")
@@ -251,6 +265,7 @@ while(running):
         elif found_arduino and byte_list is not None:  # black_percentage <= empty_image_threshold - 'empty' image
             if log:
                 print("Image is empty, sending sample image to arduino...")
+            time_per_caputure = time_per_caputure_idle
             byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
             if byte_list is not None:
                 send_to_arduino(byte_list)

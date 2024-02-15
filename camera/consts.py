@@ -1,6 +1,6 @@
 import platform
 
-time_per_caputure = 8  # time in seconds between each picture taken by the camera
+time_per_caputure_default = 3  # time in seconds between each picture taken by the camera
 threshold = 70 # 70 is a good value for the threshold to convert the image to black and white
 empty_image_threshold = 0.1 # if the percentage of black pixels in the image is less than this value, the image is considered empty
 
@@ -11,7 +11,7 @@ if platform.system() == "Linux":
 baudrate = 115200
 save_picture = False # change this to True if you want to save the pictures taken by the camera - not recommended for long periods of time
 
-log = time_per_caputure > 7  # only write print statements if taking each picture takes more than 7 seconds to avoid spamming the console
+log = time_per_caputure_default > 7  # only write print statements if taking each picture takes more than 7 seconds to avoid spamming the console
 folder_name_for_saved_pictures = "pictures_from_camera2"  # if save_picture is True, the pictures will be saved in this folder
 folder_name_for_idle_pictures = "images_for_idle"  # this folder should be in the same folder as this file 'main.py'
 
