@@ -99,7 +99,7 @@ def send_to_arduino(byte_list):
 
 
 def process_and_save_image(input_path, output_path):
-    global time_per_caputure, log
+    global time_per_capture, log
     image = cv2.imread(input_path)
     if image is not None:
         resized_image = cv2.resize(image, (64, 20))
@@ -139,8 +139,9 @@ idle_folder_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), fold
 arduino = None
 camera_on = True
 camera_working = False
-time_per_caputure = time_per_caputure_default
-time_per_caputure_idle = 1
+time_per_capture = time_per_capture_default
+time_per_capture_idle = 1
+empty_captures_in_a_row = 0
 last_capture = time.time()
 
 try:
@@ -149,8 +150,8 @@ try:
     print("Found Arduino")
 except Exception as e:
     found_arduino = False
-    # time_per_caputure = 0
-    # log = time_per_caputure > 7
+    # time_per_capture = 0
+    # log = time_per_capture > 7
     print(f"Serial port error: {e}")
     print('ARDUINO NOT CONNECTED')
     # exit()
@@ -219,7 +220,7 @@ while(running):
                 threshold -= 10
                 print(f"Threshold: {threshold}")
 
-    if camera_on and time.time() - last_capture >= time_per_caputure:
+    if camera_on and time.time() - last_capture >= time_per_capture:
         img = take_picture()
         last_capture = time.time()
         if img is None:
@@ -246,38 +247,44 @@ while(running):
         screen.blit(image_bw_display, (640, 0))
         pygame.display.flip()
     
-        if black_percentage <= empty_image_threshold:
-            byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
-            sample_index += 1
-            if sample_index >= len(idle_images):
-                sample_index = 0
-            time_per_caputure = time_per_caputure_idle
-        else:
-            time_per_caputure = time_per_caputure_default
+        # if black_percentage <= empty_image_threshold:
+        #     empty_captures_in_a_row += 1
+        #     if empty_captures_in_a_row >= empty_captures_before_idle:
+        #         byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
+        #         sample_index += 1
+        #         if sample_index >= len(idle_images):
+        #             sample_index = 0
+        #         time_per_capture = time_per_capture_idle
+        # else:
+        #     time_per_capture = time_per_capture_default
+        #     empty_captures_in_a_row = 0
 
         if found_arduino and byte_list is not None and black_percentage > empty_image_threshold:
-            time_per_caputure = time_per_caputure_default
+            time_per_capture = time_per_capture_default
+            empty_captures_in_a_row = 0
             if log:
                 # print(byte_list)
                 print("sending to arduino")
             send_to_arduino(byte_list)
             last_capture = time.time()
         elif found_arduino and byte_list is not None:  # black_percentage <= empty_image_threshold - 'empty' image
-            if log:
-                print("Image is empty, sending sample image to arduino...")
-            time_per_caputure = time_per_caputure_idle
-            byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
-            if byte_list is not None:
-                send_to_arduino(byte_list)
-                sample_index += 1
-                if sample_index >= len(idle_images):
-                    sample_index = 0
-                last_capture = time.time()
+            empty_captures_in_a_row += 1
+            if empty_captures_in_a_row >= empty_captures_before_idle:
+                if log:
+                    print("Image is empty, sending sample image to arduino...")
+                time_per_capture = time_per_capture_idle
+                byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
+                if byte_list is not None:
+                    send_to_arduino(byte_list)
+                    sample_index += 1
+                    if sample_index >= len(idle_images):
+                        sample_index = 0
+                    last_capture = time.time()
         elif found_arduino and byte_list is None:
             print("Error processing image")
 
-        # delete images if not saving, or if the time to take the picture is less than 5 seconds for not saving too many images in a short time
-        if not save_picture or time_per_caputure < 5:
+        # delete images if not saving, or if the time to take the picture is less than 2 seconds for not saving too many images in a short time
+        if not save_picture or time_per_capture <= 2:
             try:
                 os.remove(in_path)
                 os.remove(out_path)
