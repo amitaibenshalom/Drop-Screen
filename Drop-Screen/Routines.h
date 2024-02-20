@@ -8,14 +8,14 @@ void pulse_io(byte);
 void off_all_valves(uint16_t);
 //void on_all_valves(int);
 //void valve_on(int);
-void array_to_valves(bool[], byte);
-void array_to_valves_progmem(byte, byte, bool);
-void array_to_valves_progmem_3d(byte, byte);
+void image_to_valves(byte, bool);
+//void array_to_valves_progmem(byte, byte, bool);
+//void array_to_valves_progmem_3d(byte, byte);
 //void on_all_board(int, int);
-void init_drawing(byte);
-void init_drawing_3d(byte);
+void init_drawing();
+//void init_drawing_3d(byte);
 bool check_drawing();
-bool check_drawing_3d();
+//bool check_drawing_3d();
 void do_encoder();
 int read_encoder();
 void led_on(byte);
@@ -61,20 +61,13 @@ void off_all_valves(uint16_t num_of_valves) {
 //  pulse_io(SR_st_pin);
 //}
 
-void array_to_valves(bool arr[], byte arr_length) {
-  for (int i = arr_length - 1; i >= 0; i--) {
-    digitalWrite(SR_data_pin, arr[i]); // "true"=1=HIGH, "false"=0=LOW
-    pulse_io(SR_clk_pin);
-  }
-}
-
-void array_to_valves_progmem(byte d_index, byte r_index, bool reverse) {
+void image_to_valves(byte r_index, bool reverse) {
   if (reverse) {
     for (int i = image_w / 8 - 1; i >= 0; i--) {
-      byte byteValue = pgm_read_byte(&drawings[d_index][r_index * 8 + i]);
+      byte byteValue = image[r_index * 8 + i];
       for (int i = 0; i < 8; i++) {
         bool bitValue = bitRead(byteValue, i);
-        //Serial.print(bitValue == true ? " " : "#");
+//        Serial.print(bitValue == true ? " " : "#");
         digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
         pulse_io(SR_clk_pin);
       }
@@ -82,48 +75,73 @@ void array_to_valves_progmem(byte d_index, byte r_index, bool reverse) {
   }
   else {
     for (int i = 0; i < image_w / 8; i++) {
-      byte byteValue = pgm_read_byte(&drawings[d_index][r_index * 8 + i]);
+      byte byteValue = image[r_index * 8 + i];
       for (int i = 7; i >= 0; i--) {
         bool bitValue = bitRead(byteValue, i);
-        //Serial.print(bitValue == true ? " " : "#");
+//        Serial.print(bitValue == true ? " " : "#");
         digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
         pulse_io(SR_clk_pin);
       }
     }
   }
-  //Serial.println();
+//  Serial.println();
 }
 
-void array_to_valves_progmem_3d(byte d_index, byte l_index) {
-  for (int r = 0; r < cassettes_num; r++) {
-    if (r % 2 == 0) {
-      for (int i = 0; i < image_w / 8; i++) {
-        byte byteValue = pgm_read_byte(&drawings_3d[d_index][l_index*8*cassettes_num + r*8 + i]);
-        for (int b = 7; b >= 0; b--) {
-          bool bitValue = bitRead(byteValue, b);
-//          Serial.print(bitValue == true ? " " : "#");
-          digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
-          pulse_io(SR_clk_pin);
-        }
-      }
-    }
-    else {
-      for (int i = image_w/8-1; i >=0; i--) {
-        byte byteValue = pgm_read_byte(&drawings_3d[d_index][l_index*8*cassettes_num + r*8 + i]);
-        for (int b = 0; b < 8; b++) {
-          bool bitValue = bitRead(byteValue, b);
-//          Serial.print(bitValue == true ? " " : "#");
-          digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
-          pulse_io(SR_clk_pin);
-        }
-      }
-    }
-  }
-}
+//void array_to_valves_progmem(byte d_index, byte r_index, bool reverse) {
+//  if (reverse) {
+//    for (int i = image_w / 8 - 1; i >= 0; i--) {
+//      byte byteValue = pgm_read_byte(&drawings[d_index][r_index * 8 + i]);
+//      for (int i = 0; i < 8; i++) {
+//        bool bitValue = bitRead(byteValue, i);
+//        Serial.print(bitValue == true ? " " : "#");
+//        digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
+//        pulse_io(SR_clk_pin);
+//      }
+//    }
+//  }
+//  else {
+//    for (int i = 0; i < image_w / 8; i++) {
+//      byte byteValue = pgm_read_byte(&drawings[d_index][r_index * 8 + i]);
+//      for (int i = 7; i >= 0; i--) {
+//        bool bitValue = bitRead(byteValue, i);
+//        Serial.print(bitValue == true ? " " : "#");
+//        digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
+//        pulse_io(SR_clk_pin);
+//      }
+//    }
+//  }
+//  Serial.println();
+//}
+
+//void array_to_valves_progmem_3d(byte d_index, byte l_index) {
+//  for (int r = 0; r < cassettes_num; r++) {
+//    if (r % 2 == 0) {
+//      for (int i = 0; i < image_w / 8; i++) {
+//        byte byteValue = pgm_read_byte(&drawings_3d[d_index][l_index*8*cassettes_num + r*8 + i]);
+//        for (int b = 7; b >= 0; b--) {
+//          bool bitValue = bitRead(byteValue, b);
+////          Serial.print(bitValue == true ? " " : "#");
+//          digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
+//          pulse_io(SR_clk_pin);
+//        }
+//      }
+//    }
+//    else {
+//      for (int i = image_w/8-1; i >=0; i--) {
+//        byte byteValue = pgm_read_byte(&drawings_3d[d_index][l_index*8*cassettes_num + r*8 + i]);
+//        for (int b = 0; b < 8; b++) {
+//          bool bitValue = bitRead(byteValue, b);
+////          Serial.print(bitValue == true ? " " : "#");
+//          digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
+//          pulse_io(SR_clk_pin);
+//        }
+//      }
+//    }
+//  }
+//}
 
 
-void init_drawing(byte index) {
-  drawing_index = index; //for safety if user didnt changed drawing_index to match the index
+void init_drawing() {
   row_in_drawing = image_h - 1;
   led_start_flag = true;
   last_led_start = millis();
@@ -143,25 +161,47 @@ void init_drawing(byte index) {
 //  Serial.println("drawing...");
 }
 
-void init_drawing_3d(byte index) {
-  drawing_3d_index = index;
-  layer_in_drawing_3d = 0;
-  led_start_flag = true;
-  last_led_start = millis();
-  if (full_light)
-    led_on(color);
-  else {
-    if (led_start > 0)
-      led_off();
-    else
-      led_on(color);
-  }
-  valve_on_flag = false;
-  off_all_valves(num_of_valves);
-  space_flag = false;
-  led_on_flag = false;
-  drawing_flag = true;
-}
+
+//void init_drawing(byte index) {
+//  drawing_index = index; //for safety if user didnt changed drawing_index to match the index
+//  row_in_drawing = image_h - 1;
+//  led_start_flag = true;
+//  last_led_start = millis();
+//  if (full_light)
+//    led_on(color);
+//  else {
+//    if (led_start > 0)
+//      led_off();
+//    else
+//      led_on(color);
+//  }
+//  valve_on_flag = false;
+//  off_all_valves(num_of_valves);
+//  space_flag = false;
+//  led_on_flag = false;
+//  drawing_flag = true;
+////  Serial.println("drawing...");
+//}
+
+//void init_drawing_3d(byte index) {
+//  drawing_3d_index = index;
+//  layer_in_drawing_3d = 0;
+//  led_start_flag = true;
+//  last_led_start = millis();
+//  if (full_light)
+//    led_on(color);
+//  else {
+//    if (led_start > 0)
+//      led_off();
+//    else
+//      led_on(color);
+//  }
+//  valve_on_flag = false;
+//  off_all_valves(num_of_valves);
+//  space_flag = false;
+//  led_on_flag = false;
+//  drawing_flag = true;
+//}
 
 bool check_drawing() {
 //    off_all_valves(num_of_valves);
@@ -174,7 +214,8 @@ bool check_drawing() {
       return true;
     // drawing depth is the depth of the image - reapet for the neccesary amout of layers
     for (int i = 0; i < drawing_depth; i++) {
-      array_to_valves_progmem(drawing_index, row_in_drawing, cassette_drawing%2);
+//      array_to_valves_progmem(drawing_index, row_in_drawing, cassette_drawing%2);
+        image_to_valves(row_in_drawing, cassette_drawing%2);
     }
     digitalWrite(SR_data_pin, LOW);
     for (int i = 0; i < cassette_drawing * image_w; i++) {
@@ -190,19 +231,19 @@ bool check_drawing() {
   return false;
 }
 
-bool check_drawing_3d() {
-  if (!valve_on_flag) {
-    if (layer_in_drawing_3d == drawings_3d_size[drawing_3d_index])
-      return true;
-    // drawing depth is the depth of the image - reapet for the neccesary amout of layers
-    array_to_valves_progmem_3d(drawing_3d_index, layer_in_drawing_3d);
-    pulse_io(SR_st_pin);
-    valve_on_flag = true;
-    last_valve_on = millis();
-    layer_in_drawing_3d++;
-  }
-  return false;
-}
+//bool check_drawing_3d() {
+//  if (!valve_on_flag) {
+//    if (layer_in_drawing_3d == drawings_3d_size[drawing_3d_index])
+//      return true;
+//    // drawing depth is the depth of the image - reapet for the neccesary amout of layers
+//    array_to_valves_progmem_3d(drawing_3d_index, layer_in_drawing_3d);
+//    pulse_io(SR_st_pin);
+//    valve_on_flag = true;
+//    last_valve_on = millis();
+//    layer_in_drawing_3d++;
+//  }
+//  return false;
+//}
 
 int calc_time_factor(byte row) {
   return int(sqrt(view_height/(image_h*g*(row + 0.5))) * 1000);

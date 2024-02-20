@@ -14,31 +14,35 @@
 #define OLED_RESET -1   //   QT-PY / XIAO
 Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-void start_display(){
-  display.begin(i2c_Address, true); // Address 0x3C default
-  display.clearDisplay();
-  display.display();
-
-  display.setTextColor(SH110X_WHITE);
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println(F(__FILE__ " " __DATE__ " " __TIME__));
-  display.display();
-  delay(4000);
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setCursor(0, 0);
-  display.println("START");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.display();
-}
+//void display_settings2(){
+//  display.setTextSize(1);
+//  display.clearDisplay();
+//  display.setCursor(0, 0);
+//  display.print(current_setting==0?">Valve Time= ":" Valve Time=");
+//  display.println(valve_on_time);  
+//  display.print(current_setting==1?">Space Time= ":" Space Time=");
+//  display.println(space_time);
+//  display.print(current_setting==2?">Led Start= ":" Led Start=");
+//  display.println(led_start);
+//  display.print(current_setting==3?">Led Time= ":" Led Time=");
+//  display.println(led_on_time);
+//  display.print(current_setting==4?">Depth= ":" Depth=");
+//  display.println(drawing_depth);
+//  display.print(current_setting==5?">Full Light= ":" Full Light=");
+//  display.println(full_light?"yes":"no");
+////  display.print(current_setting==6?">Type= ":" Type=");
+////  display.println(dim3_flag?"3D":"2D");
+////  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
+////  display.println(auto_factor_flag?"yes":"no");
+////  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
+////  display.println(led_power);
+//  display.display();
+//}
 
 void display_settings(){
   display.clearDisplay();
   display.setCursor(0, 0);
+<<<<<<< HEAD
   display.print(current_setting==0?">Valve Time= ":" Valve Time=");
   display.println(valve_on_time);  
   display.print(current_setting==1?">Space Time= ":" Space Time=");
@@ -63,6 +67,8 @@ void display_settings(){
 void display_settings2(){
   display.clearDisplay();
   display.setCursor(0, 0);
+=======
+>>>>>>> acb3b3ef832619caaebdda92ccd354d0b65a1a35
   switch(current_setting) {
     case 0:
       display.print("Valve_t=");
@@ -89,8 +95,8 @@ void display_settings2(){
       display.println(full_light?"yes":"no");
       break;
     case 6:
-      display.print("Type=");
-      display.println(dim3_flag?"3D":"2D");
+//      display.print("Type=");
+//      display.println(dim3_flag?"3D":"2D");
       break;
     case 7:
       display.print("Light PWM=");
@@ -98,6 +104,30 @@ void display_settings2(){
       break;
   }
   display.display();
+}
+
+
+void start_display(){
+  display.begin(i2c_Address, true); // Address 0x3C default
+  display.clearDisplay();
+  display.display();
+
+  display.setTextColor(SH110X_WHITE);
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.println(F(__FILE__ " " __DATE__ " " __TIME__));
+  display.display();
+  delay(4000);
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor(0, 0);
+  display.println("START");
+  display.display();
+  delay(500);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.display();
+  display_settings();
 }
 
 
