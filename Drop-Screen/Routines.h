@@ -10,12 +10,9 @@ void off_all_valves(uint16_t);
 //void valve_on(int);
 void image_to_valves(byte, bool);
 //void array_to_valves_progmem(byte, byte, bool);
-//void array_to_valves_progmem_3d(byte, byte);
 //void on_all_board(int, int);
 void init_drawing();
-//void init_drawing_3d(byte);
 bool check_drawing();
-//bool check_drawing_3d();
 void do_encoder();
 int read_encoder();
 void led_on(byte);
@@ -113,33 +110,6 @@ void image_to_valves(byte r_index, bool reverse) {
 //  Serial.println();
 //}
 
-//void array_to_valves_progmem_3d(byte d_index, byte l_index) {
-//  for (int r = 0; r < cassettes_num; r++) {
-//    if (r % 2 == 0) {
-//      for (int i = 0; i < image_w / 8; i++) {
-//        byte byteValue = pgm_read_byte(&drawings_3d[d_index][l_index*8*cassettes_num + r*8 + i]);
-//        for (int b = 7; b >= 0; b--) {
-//          bool bitValue = bitRead(byteValue, b);
-////          Serial.print(bitValue == true ? " " : "#");
-//          digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
-//          pulse_io(SR_clk_pin);
-//        }
-//      }
-//    }
-//    else {
-//      for (int i = image_w/8-1; i >=0; i--) {
-//        byte byteValue = pgm_read_byte(&drawings_3d[d_index][l_index*8*cassettes_num + r*8 + i]);
-//        for (int b = 0; b < 8; b++) {
-//          bool bitValue = bitRead(byteValue, b);
-////          Serial.print(bitValue == true ? " " : "#");
-//          digitalWrite(SR_data_pin, !bitValue); // "true"=1=HIGH, "false"=0=LOW
-//          pulse_io(SR_clk_pin);
-//        }
-//      }
-//    }
-//  }
-//}
-
 
 void init_drawing() {
   row_in_drawing = image_h - 1;
@@ -160,48 +130,6 @@ void init_drawing() {
   drawing_flag = true;
 //  Serial.println("drawing...");
 }
-
-
-//void init_drawing(byte index) {
-//  drawing_index = index; //for safety if user didnt changed drawing_index to match the index
-//  row_in_drawing = image_h - 1;
-//  led_start_flag = true;
-//  last_led_start = millis();
-//  if (full_light)
-//    led_on(color);
-//  else {
-//    if (led_start > 0)
-//      led_off();
-//    else
-//      led_on(color);
-//  }
-//  valve_on_flag = false;
-//  off_all_valves(num_of_valves);
-//  space_flag = false;
-//  led_on_flag = false;
-//  drawing_flag = true;
-////  Serial.println("drawing...");
-//}
-
-//void init_drawing_3d(byte index) {
-//  drawing_3d_index = index;
-//  layer_in_drawing_3d = 0;
-//  led_start_flag = true;
-//  last_led_start = millis();
-//  if (full_light)
-//    led_on(color);
-//  else {
-//    if (led_start > 0)
-//      led_off();
-//    else
-//      led_on(color);
-//  }
-//  valve_on_flag = false;
-//  off_all_valves(num_of_valves);
-//  space_flag = false;
-//  led_on_flag = false;
-//  drawing_flag = true;
-//}
 
 bool check_drawing() {
 //    off_all_valves(num_of_valves);
@@ -230,20 +158,6 @@ bool check_drawing() {
   }
   return false;
 }
-
-//bool check_drawing_3d() {
-//  if (!valve_on_flag) {
-//    if (layer_in_drawing_3d == drawings_3d_size[drawing_3d_index])
-//      return true;
-//    // drawing depth is the depth of the image - reapet for the neccesary amout of layers
-//    array_to_valves_progmem_3d(drawing_3d_index, layer_in_drawing_3d);
-//    pulse_io(SR_st_pin);
-//    valve_on_flag = true;
-//    last_valve_on = millis();
-//    layer_in_drawing_3d++;
-//  }
-//  return false;
-//}
 
 int calc_time_factor(byte row) {
   return int(sqrt(view_height/(image_h*g*(row + 0.5))) * 1000);
@@ -309,11 +223,7 @@ void do_encoder() {
       case 5:
         full_light = !full_light;
         break;
-      case 6:
-        dim3_flag = !dim3_flag;
-        drawing_flag = false;
-        break;
-//      case 7:
+//      case 6:
 //        auto_factor_flag = !auto_factor_flag;
 //        break;
       case 7:
