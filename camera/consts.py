@@ -2,7 +2,7 @@ import platform
 
 time_per_capture_default = 3  # time in seconds between each picture taken by the camera
 threshold = 70 # 70 is a good value for the threshold to convert the image to black and white
-empty_image_threshold = 0.05 # if the percentage of black pixels in the image is less than this value, the image is considered empty
+empty_image_threshold = 0.1 # if the percentage of black pixels in the image is less than this value, the image is considered empty
 
 empty_captures_before_idle = 3  # if this many empty images are taken in a row, the camera will display an idle image
 
