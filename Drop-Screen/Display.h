@@ -124,7 +124,7 @@ void start_display(){
   display.clearDisplay();
   display.setTextSize(1);
   display.display();
-  display_settings();
+  display_settings2();
 }
 
 

@@ -54,7 +54,7 @@ byte valve_on_time = 5;
 uint16_t space_time = 750;
 uint16_t led_start = 350;
 uint16_t led_on_time = 550;
-byte drawing_depth = 1;
+byte drawing_depth = 3;
 byte color = 0; // 0 - red, 1 - green, 2 - blue, 3 - white
 byte colors[][3] = {{255,0,0},{0,255,0},{0,0,255},{255,255,0},{255,0,255},{0,255,255},{255,255,255}};
 byte led_power = 255; // for PWM
@@ -67,7 +67,6 @@ bool space_flag = false;
 bool led_start_flag = false;
 bool led_on_flag = false;
 bool full_light = true;
-bool dim3_flag = false;
 bool auto_factor_flag = false; // true if you want the program to automatically factor the timming of the valves per row to match the drawing
 bool random_cassette = true;
 
