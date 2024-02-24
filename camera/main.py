@@ -31,7 +31,9 @@ def msg_on_screen():
 
 
 def take_picture():
-    global cap
+    global cap, camera_working
+    if not camera_working:
+        return None
     ret, frame = cap.read()
     if ret:
         return frame
@@ -56,7 +58,7 @@ def send_to_arduino(byte_list):
     arduino.reset_input_buffer()
     arduino.reset_output_buffer()
     if log:
-        print('Sending data to Arduino!!!!!!!')
+        print('Sending data to Arduino...')
     # send START KEY ('s')
     arduino.write('s'.encode())
     response = arduino.read()
@@ -157,7 +159,7 @@ except Exception as e:
     # exit()
 
 cap = None
-camera_index = 0 # 0 is the default camera on the computer, change it to the camera you want to use
+camera_index = 1 # 0 is the default camera on the computer, change it to the camera you want to use
 while True:
     try:
         cap = cv2.VideoCapture(camera_index)
@@ -171,7 +173,7 @@ while True:
         pass
 
 
-screen_width, screen_height = 1280, 480
+screen_width, screen_height = 720, 640
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Camera")
@@ -188,7 +190,7 @@ sample_index = 0
 running = True
 while(running):
     
-    img = take_picture()
+    img = take_picture()  # take a picture every 0.002 seconds to keep the buffer clean with the latest image and avoid delay in the images. Do not remove for Raspberry Pi
     time.sleep(0.002)
     
     for event in pygame.event.get():
@@ -234,6 +236,7 @@ while(running):
         else:
             camera_working = True
         img = cv2.flip(img, 0)
+        img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if not is_folder_created:
             os.makedirs(folder_name, exist_ok=True)
@@ -245,9 +248,10 @@ while(running):
         screen.fill((0, 0, 0))
         image_display = pygame.image.load(in_path)
         image_bw_display = pygame.image.load(out_path)
-        image_bw_display = pygame.transform.scale(image_bw_display, (640, 480))
+        image_bw_display = pygame.transform.scale(image_bw_display, (screen_width//2, screen_height))
+        image_display = pygame.transform.scale(image_display, (screen_width//2, screen_height))
         screen.blit(image_display, (0, 0))
-        screen.blit(image_bw_display, (640, 0))
+        screen.blit(image_bw_display, (screen_width//2, 0))
         pygame.display.flip()
     
         # if black_percentage <= empty_image_threshold:
