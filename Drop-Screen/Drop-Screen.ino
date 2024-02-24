@@ -66,10 +66,11 @@ void loop() {
       space_flag = true;
       last_space_time = millis();
       cassette_drawing += 2;
+//      cassette_drawing = random(0,cassettes_num);
       color += 1;
       if (color >= colors_num)
         color = 0;
-      if (cassette_drawing >= 10) {
+      if (cassette_drawing >= cassettes_num) {
         cassette_drawing = 0;
         drawing_index++;
         if (drawing_index >= drawings_num)

@@ -168,13 +168,12 @@ bool check_drawing() {
 //    for (int i = 0; i < image_w; i++)
 //      Serial.print(drawings[drawing_index][row_in_drawing * image_w + i] == 1 ? "1":"0");
 //    Serial.println();
-
   if (!valve_on_flag) {
     if (row_in_drawing == -1)
       return true;
     // drawing depth is the depth of the image - reapet for the neccesary amout of layers
     for (int i = 0; i < drawing_depth; i++) {
-      array_to_valves_progmem(drawing_index, row_in_drawing, cassette_drawing%2);
+      array_to_valves_progmem(drawing_index, row_in_drawing, cassette_drawing%2 + i%2);
     }
     digitalWrite(SR_data_pin, LOW);
     for (int i = 0; i < cassette_drawing * image_w; i++) {

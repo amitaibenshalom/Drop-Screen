@@ -74,11 +74,12 @@ byte valve_on_time = 5;
 uint16_t space_time = 750;
 uint16_t led_start = 350;
 uint16_t led_on_time = 550;
-byte drawing_depth = 4;
+byte drawing_depth = 2;
 byte color = 0; // 0 - red, 1 - green, 2 - blue, 3 - white
-byte colors[][3] = {{255,75,75},{90,255,90},{219,97,255},{255,255,255}};
+//float colors[][3] = {{255,75,75},{90,255,90},{219,97,255},{255,255,255}};
+byte colors[][3] = {{255,0,255},{255,255,0},{255,215,215}};
 byte led_power = 255; // for PWM
-byte colors_num = 4;
+byte colors_num = 3;
          
 bool on_button = false;
 bool drawing_flag = false;
@@ -86,7 +87,7 @@ bool valve_on_flag = false;
 bool space_flag = false;
 bool led_start_flag = false;
 bool led_on_flag = false;
-bool full_light = false;
+bool full_light = true;
 bool dim3_flag = false;
 bool auto_factor_flag = false; // true if you want the program to automatically factor the timming of the valves per row to match the drawing
 
@@ -246,10 +247,10 @@ const byte hand_bw [] PROGMEM = {
 //};
 
 
-const byte drawings_num = 3; // number of drawings
+const byte drawings_num = 4; // number of drawings
 char* drawings[] = {
-  heart, star, diamond
-//  hand_bw
+  heart, star, diamond,
+  hand_bw
 };
 const byte drawings_num_3d = 1; // number of 3d drawings
 char* drawings_3d[] = {

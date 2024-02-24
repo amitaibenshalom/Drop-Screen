@@ -23,12 +23,12 @@
  */
 
 #define SR_st_pin 4 // 74HC565 shift register strob pin (12) - active high (low/hig/low pulse shift Sr vector to outputs)make sure set low during "push"data in
-#define SR_clk_pin 5 // 74HC565 shift clock pin (11) - active high (low/high/low pulse shift data in) make sure initaly set to low 
-#define SR_data_pin 6 // 74HC565 Data in pin (14)  
-#define SR_en_pin 3 // 74HC565 out put enable pin (13) - active low 
-#define encoder_pinA 11
-#define encoder_pinB 12
-#define encoder_sw 10
+#define SR_clk_pin 13 // 74HC565 shift clock pin (11) - active high (low/high/low pulse shift data in) make sure initaly set to low 
+#define SR_data_pin 11 // 74HC565 Data in pin (14)  
+#define SR_en_pin 7 // 74HC565 out put enable pin (13) - active low 
+#define encoder_pinA 2
+#define encoder_pinB 3
+#define encoder_sw 8
 
 #define INTERNAL_LED 13
 #define BAUDRATE 115200
