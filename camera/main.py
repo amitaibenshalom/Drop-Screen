@@ -51,6 +51,18 @@ def send_one_number(value):
     return True
 
 
+def send_drop_signal():
+    global arduino
+    arduino.write(drop_key.encode())
+    response = arduino.read()
+    if response is not None:
+        # print(chr(ord(response)))
+        pass
+    else:
+        print('Error: No response from Arduino')
+        return False
+    return True
+
 def send_to_arduino(byte_list):
     global arduino
 

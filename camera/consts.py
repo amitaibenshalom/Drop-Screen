@@ -20,3 +20,8 @@ folder_name_for_idle_pictures = "images_for_idle"  # this folder should be in th
 idle_images = ["hand0.png", "hand1.png", "hand2.png", "hand3.png", "hand4.png", "hand5.png", "hand6.png", "hand7.png", "hand8.png"]
 # these images will be used if the picture taken from camera is 'empty' (i.e. no object is detected on the picture).
 # The images should be in the folder 'images_for_idle' and their paths should be relative to the folder 'images_for_idle'
+
+drop_key = 'd'  # the key to drop (in water) the image in the arduino's buffer
+start_key = 's'  # the key to send a new image to the arduino's buffer and start the process of dropping it
+end_key = 'e'  # the key to stop the arduino's process of collecting data from computer and dropping the image
+check_key = 'g'  # the key to check the arduino's response
