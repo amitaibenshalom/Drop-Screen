@@ -102,6 +102,7 @@ void loop() {
       drawing_flag = false;
       last_space_time = millis();
       cassette_drawing += 2;
+//      cassette_drawing = random(0,cassettes_num);
       color += 1;
       if (color >= colors_num)
         color = 0;

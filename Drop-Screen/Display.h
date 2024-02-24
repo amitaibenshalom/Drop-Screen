@@ -42,8 +42,8 @@ Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, 
 void display_settings(){
   display.clearDisplay();
   display.setCursor(0, 0);
-  display.print(current_setting==0?">Valve Time= ":" Valve Time=");
-  display.println(valve_on_time);  
+//  display.print(current_setting==0?">Valve Time= ":" Valve Time=");
+//  display.println(valve_on_time);  
   display.print(current_setting==1?">Space Time= ":" Space Time=");
   display.println(space_time);
   display.print(current_setting==2?">Led Start= ":" Led Start=");
@@ -58,8 +58,8 @@ void display_settings(){
 //  display.println(dim3_flag?"3D":"2D");
 //  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
 //  display.println(auto_factor_flag?"yes":"no");
-//  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
-//  display.println(led_power);
+  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
+  display.println(led_power);
   display.display();
 }
 

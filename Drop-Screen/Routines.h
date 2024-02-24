@@ -136,7 +136,6 @@ bool check_drawing() {
 //    for (int i = 0; i < image_w; i++)
 //      Serial.print(drawings[drawing_index][row_in_drawing * image_w + i] == 1 ? "1":"0");
 //    Serial.println();
-
   if (!valve_on_flag) {
     if (row_in_drawing == -1)
       return true;

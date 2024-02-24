@@ -55,10 +55,10 @@ uint16_t space_time = 750;
 uint16_t led_start = 350;
 uint16_t led_on_time = 550;
 byte drawing_depth = 2;
-byte color = 0; // 0 - red, 1 - green, 2 - blue, 3 - white
-byte colors[][3] = {{255,0,0},{0,255,0},{0,0,255},{255,255,0},{255,0,255},{0,255,255},{255,255,255}};
+byte color = 0;
+byte colors[][3] = {{255,0,255},{255,255,0},{255,215,215}};
 byte led_power = 255; // for PWM
-byte colors_num = 7;
+byte colors_num = 3;
          
 bool on_button = false;
 bool drawing_flag = false;
@@ -84,7 +84,6 @@ signed int encoder_pos = 0;
 const byte prescaler = 2;
 
 int auto_valve_on_time = valve_on_time;
-
 signed char row_in_drawing = image_h - 1; //which row in the drawing is currently produced 2D
 byte cassette_drawing = 0; //in which cassette is the current frame (drawing) being produced 2D
 byte image[160];

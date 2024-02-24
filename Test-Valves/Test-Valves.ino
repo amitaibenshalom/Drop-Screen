@@ -12,8 +12,8 @@ void setup() {
   off_all_valves(num_of_valves);
   
   pinMode(encoder_sw, INPUT_PULLUP);
-  pinMode(encoder_pinA, INPUT); 
-  pinMode(encoder_pinB, INPUT); 
+  pinMode(encoder_pinA, INPUT_PULLUP); 
+  pinMode(encoder_pinB, INPUT_PULLUP); 
   Serial.begin(BAUDRATE);
   delay (100);// wait to make sure serial begin
   start_display();
