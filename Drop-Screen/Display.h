@@ -39,76 +39,75 @@ Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, 
 //  display.display();
 //}
 
-void display_settings(){
-  display.clearDisplay();
-  display.setCursor(0, 0);
-//  display.print(current_setting==0?">Valve Time= ":" Valve Time=");
-//  display.println(valve_on_time);  
-  display.print(current_setting==1?">Space Time= ":" Space Time=");
-  display.println(space_time);
-  display.print(current_setting==2?">Led Start= ":" Led Start=");
-  display.println(led_start);
-  display.print(current_setting==3?">Led Time= ":" Led Time=");
-  display.println(led_on_time);
-  display.print(current_setting==4?">Depth= ":" Depth=");
-  display.println(drawing_depth);
-  display.print(current_setting==5?">Full Light= ":" Full Light=");
-  display.println(full_light?"yes":"no");
-//  display.print(current_setting==6?">Type= ":" Type=");
-//  display.println(dim3_flag?"3D":"2D");
-//  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
-//  display.println(auto_factor_flag?"yes":"no");
-  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
-  display.println(led_power);
-  display.display();
-}
+//void display_settings(){
+//  display.clearDisplay();
+//  display.setCursor(0, 0);
+////  display.print(current_setting==0?">Valve Time= ":" Valve Time=");
+////  display.println(valve_on_time);  
+//  display.print(current_setting==1?">Space Time= ":" Space Time=");
+//  display.println(space_time);
+//  display.print(current_setting==2?">Led Start= ":" Led Start=");
+//  display.println(led_start);
+//  display.print(current_setting==3?">Led Time= ":" Led Time=");
+//  display.println(led_on_time);
+//  display.print(current_setting==4?">Depth= ":" Depth=");
+//  display.println(drawing_depth);
+//  display.print(current_setting==5?">Full Light= ":" Full Light=");
+//  display.println(full_light?"yes":"no");
+////  display.print(current_setting==6?">Type= ":" Type=");
+////  display.println(dim3_flag?"3D":"2D");
+////  display.print(current_setting==7?">Auto Factoring= ":" Auto Factoring=");
+////  display.println(auto_factor_flag?"yes":"no");
+//  display.print(current_setting==7?">Led PWM= ":" Led PWM=");
+//  display.println(led_power);
+//  display.display();
+//}
 
-void display_settings2(){
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  switch(current_setting) {
-    case 0:
-      display.print("Valve_t=");
-      display.println(valve_on_time); 
-      break;
-    case 1:
-      display.print("Space_t=");
-      display.println(space_time); 
-      break;
-    case 2:
-      display.print("Led Start=");
-      display.println(led_start); 
-      break;
-    case 3:
-      display.print("Led Time=");
-      display.println(led_on_time); 
-      break;
-    case 4:
-      display.print("Depth=");
-      display.println(drawing_depth);
-      break;
-    case 5:
-      display.print("Full Light=");
-      display.println(full_light?"yes":"no");
-      break;
-    case 6:
-//      display.print("Auto Factor=");
-//      display.println(auto_factor_flag?"yes":"no");
-      break;
-    case 7:
-      display.print("Light PWM=");
-      display.println(led_power);
-      break;
-  }
-  display.display();
-}
+//void display_settings2(){
+//  display.clearDisplay();
+//  display.setCursor(0, 0);
+//  switch(current_setting) {
+//    case 0:
+//      display.print("Valve_t=");
+//      display.println(valve_on_time); 
+//      break;
+//    case 1:
+//      display.print("Space_t=");
+//      display.println(space_time); 
+//      break;
+//    case 2:
+//      display.print("Led Start=");
+//      display.println(led_start); 
+//      break;
+//    case 3:
+//      display.print("Led Time=");
+//      display.println(led_on_time); 
+//      break;
+//    case 4:
+//      display.print("Depth=");
+//      display.println(drawing_depth);
+//      break;
+//    case 5:
+//      display.print("Full Light=");
+//      display.println(full_light?"yes":"no");
+//      break;
+//    case 6:
+////      display.print("Auto Factor=");
+////      display.println(auto_factor_flag?"yes":"no");
+//      break;
+//    case 7:
+//      display.print("Light PWM=");
+//      display.println(led_power);
+//      break;
+//  }
+//  display.display();
+//}
 
 
 void start_display(){
   display.begin(i2c_Address, true); // Address 0x3C default
   display.clearDisplay();
   display.display();
-
   display.setTextColor(SH110X_WHITE);
   display.setTextSize(1);
   display.setCursor(0, 0);
@@ -121,11 +120,66 @@ void start_display(){
   display.println("START");
   display.display();
   delay(500);
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.display();
-  display_settings2();
 }
 
+void display_vars_error() {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextSize(2);
+  display.println("ERROR");
+  display.setTextSize(1);
+  display.println("no variables collected");
+  display.println("check connection to PI");
+  display.println("trying again in 5...");
+  display.display();
+}
+
+void display_vars_collect() {
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(2);
+  display.println("Collecting variables...");
+  display.display();
+}
+
+void display_vars_more_error() {
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(2);
+  display.println("ERROR");
+  display.setTextSize(1);
+  display.println("got too much variables from PI");
+  display.println("this may cause issues");
+  display.display();
+}
+
+void display_vars_good() {
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(2);
+  display.println("got all variables");
+  display.display();
+}
+
+void display_done() {
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(2);
+  display.println("ON");
+  display.setTextSize(1);
+  display.println("getting images from PI");
+  display.display();
+}
+
+void display_error() {
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextSize(2);
+  display.println("ERROR");
+  display.setTextSize(1);
+  display.println("something went wrong");
+  display.println("Amitai - 0559385905");
+  display.display();
+}
 
 #endif

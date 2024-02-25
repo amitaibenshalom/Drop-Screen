@@ -11,66 +11,85 @@ void setup() {
   digitalWrite(SR_data_pin, LOW);
   off_all_valves(num_of_valves);
   pulse_io(SR_st_pin);
-  pinMode(encoder_sw, INPUT_PULLUP);
-  pinMode(encoder_pinA, INPUT); 
-  pinMode(encoder_pinB, INPUT); 
+//  pinMode(encoder_sw, INPUT_PULLUP);
+//  pinMode(encoder_pinA, INPUT); 
+//  pinMode(encoder_pinB, INPUT); 
   pinMode(red_led_pin, OUTPUT);
   pinMode(green_led_pin, OUTPUT);
   pinMode(blue_led_pin, OUTPUT);
   led_off();
   Serial.begin(BAUDRATE);
   delay (100);// wait to make sure serial begin
-//  Serial.println("START");
   start_display();
-//  Serial.println("START");
-  digitalWrite(SR_en_pin, LOW); 
-  update_height(); // for auto factoring
-//  drawing_index = 0;
-  delay(1000);
+  digitalWrite(SR_en_pin, LOW);
+  // get variables:
+  display_vars_collect();
+  uint16_t last_collect = millis();
+  while (Serial.available() == 0) {
+    delay(1);
+    if (millis() - last_collect > 8000) {
+      display_vars_error();
+      delay(5000);
+      display_vars_collect();
+      last_collect = millis();
+    }
+  }
+  //get number of variables - serial is not empty because of loop
+  // super duper important:
+  if (!collect_variables()) {
+    display_vars_more_error();
+    delay(4000);
+  }
+  else {
+    display_vars_good();
+    delay(1000);
+    display_done();
+  }
+  // send ok key
+  Serial.write(GOOD_KEY);
 }
+
 
 void loop() {
 
-//  do_encoder();
-    
-  if (Serial.available() > 0 && Serial.read() == START_KEY) {
-    Serial.write(START_KEY);
-    for (int i = 0; i < 160; i++) {
-//      image[i] = Serial.read();
-//      Serial.write(image[i]);
-//      byte temp = Serial.read();
-//      Serial.write(&temp,1);
-      byte test;
-      if (Serial.available() == 0) {
-        i--;
-        continue;
-      }
-      test = Serial.read();
-      image[i] = test;
-      Serial.println(test, DEC);
-//      Serial.print(test); 
-//      Serial.write(test);
-      if ((i + 1) % 8 == 0) {
-        Serial.write('g');
+  if (Serial.available() > 0 && !drawing_flag) {
+    char key = Serial.read();
+    if (key == DROP_KEY) {
+      init_drawing();
+    }
+    else if (key == START_KEY) {
+      Serial.write(START_KEY);
+      delay(2);
+      cassette_drawing = Serial.read();
+      for (int i = 0; i < 160; i++) {
+        byte data;
+        if (Serial.available() == 0) {
+          i--;
+          continue;
+        }
+        data = Serial.read();
+        image[i] = data;
+//        Serial.println(data, DEC);
+//        Serial.print(data); 
+//        Serial.write(data);
+        if ((i + 1) % 8 == 0) {
+          Serial.write(GOOD_KEY);
 //          Serial.write(image[i]);
 //        Serial.println();
-//        while(Serial.available() == 0 && i < 159) {
-//          delay(1);
-//        }
 //        for (int j = 7; j >=0; j--) {
 //          Serial.write(image[i-j]);
 //        }
+        }
       }
+      delay(1);
+      if (Serial.read() != END_KEY) {
+        display_error();
+      }
+      init_drawing();
     }
-    off_all_valves(num_of_valves);
-    pulse_io(SR_st_pin);
-    init_drawing();
   }
 
-  if (space_flag && millis() - last_space_time > space_time) {
-    space_flag = false;
-  }
-  if (valve_on_flag && millis() - last_valve_on > (auto_factor_flag ? auto_valve_on_time : valve_on_time)) {
+  if (valve_on_flag && millis() - last_valve_on > valve_on_time) {
     off_all_valves(num_of_valves); // without pulsing ST because layers should be continuous
     valve_on_flag = false;
   }
@@ -86,32 +105,16 @@ void loop() {
     if (!full_light && led_on_time > 0)
       led_on(color);
   }
-
-  if (!drawing_flag && !space_flag) {
-    off_all_valves(num_of_valves);
-    pulse_io(SR_st_pin);
-    init_drawing();
-  }
-  if (drawing_flag && !space_flag) {
+  
+  if (drawing_flag) {
     if (check_drawing()) {
-//      Serial.println("done drawing");
-//      drawing_flag = false;
+      drawing_flag = false;
       off_all_valves(num_of_valves);
       pulse_io(SR_st_pin);
-      space_flag = true;
-      drawing_flag = false;
-      last_space_time = millis();
-      cassette_drawing += 2;
-//      cassette_drawing = random(0,cassettes_num);
       color += 1;
       if (color >= colors_num)
         color = 0;
-      if (cassette_drawing >= cassettes_num) {
-        cassette_drawing = 0;
-//        drawing_index++;
-//        if (drawing_index >= drawings_num)
-//          drawing_index = 0;
-      }
+      Serial.write(READY_KEY);
     }
   }
 }
