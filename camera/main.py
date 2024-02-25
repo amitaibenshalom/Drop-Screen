@@ -116,7 +116,7 @@ def process_and_save_image(input_path, output_path):
     global time_per_capture, log
     image = cv2.imread(input_path)
     if image is not None:
-        resized_image = cv2.resize(image, (64, 20))
+        resized_image = cv2.resize(image, (output_width, output_height))
         gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         # Apply binary thresholding to create a black and white image
         _, bw_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
@@ -248,7 +248,10 @@ while(running):
         else:
             camera_working = True
         img = cv2.flip(img, 0)
-        img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        # squish the image on the width axis and add white padding in the sides
+        # img.resize(360-100, 640)
+        # img = cv2.copyMakeBorder(img, 0, 0, 70, 70, cv2.BORDER_CONSTANT, value=[255, 255, 255])
         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if not is_folder_created:
             os.makedirs(folder_name, exist_ok=True)
@@ -260,7 +263,7 @@ while(running):
         screen.fill((0, 0, 0))
         image_display = pygame.image.load(in_path)
         image_bw_display = pygame.image.load(out_path)
-        image_bw_display = pygame.transform.scale(image_bw_display, (screen_width//2, screen_height))
+        image_bw_display = pygame.transform.scale(image_bw_display, (screen_width//2, screen_width//2 * output_height // output_width))
         image_display = pygame.transform.scale(image_display, (screen_width//2, screen_height))
         screen.blit(image_display, (0, 0))
         screen.blit(image_bw_display, (screen_width//2, 0))

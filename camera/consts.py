@@ -1,12 +1,12 @@
 import platform
 
 time_per_capture_default = 3  # time in seconds between each picture taken by the camera
-threshold = 150 # 70 is a good value for the threshold to convert the image to black and white
+threshold = 120 # 70 is a good value for the threshold to convert the image to black and white
 empty_image_threshold = 0.1 # if the percentage of black pixels in the image is less than this value, the image is considered empty
 
 empty_captures_before_idle = 3  # if this many empty images are taken in a row, the camera will display an idle image
 
-port = 'COM4'  # change this to the port where the arduino is connected
+port = 'COM3'  # change this to the port where the arduino is connected
 if platform.system() == "Linux":
     port = '/dev/ttyUSB0'
 
@@ -25,3 +25,6 @@ drop_key = 'd'  # the key to drop (in water) the image in the arduino's buffer
 start_key = 's'  # the key to send a new image to the arduino's buffer and start the process of dropping it
 end_key = 'e'  # the key to stop the arduino's process of collecting data from computer and dropping the image
 check_key = 'g'  # the key to check the arduino's response
+
+output_width = 64
+output_height = 20
