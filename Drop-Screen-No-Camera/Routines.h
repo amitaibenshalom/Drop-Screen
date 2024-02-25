@@ -6,12 +6,9 @@
 
 void pulse_io(byte);
 void off_all_valves(uint16_t);
-//void on_all_valves(int);
-//void valve_on(int);
 void array_to_valves(bool[], byte);
 void array_to_valves_progmem(byte, byte, bool);
 void array_to_valves_progmem_3d(byte, byte);
-//void on_all_board(int, int);
 void init_drawing(byte);
 void init_drawing_3d(byte);
 bool check_drawing();
@@ -27,39 +24,13 @@ void pulse_io(byte io_num) {
   digitalWrite(io_num, LOW);
 }
 
+// without pulsing ST!
 void off_all_valves(uint16_t num_of_valves) {
   digitalWrite(SR_data_pin, LOW);
   for (int i = 0; i < num_of_valves; i++)
     pulse_io(SR_clk_pin);
 //  pulse_io(SR_st_pin);
 }
-
-//void on_all_valves(int num_of_valves){
-//  digitalWrite(SR_data_pin, HIGH);
-//  for (int i = 0; i < num_of_valves; i++)
-//    pulse_io(SR_clk_pin);
-//  digitalWrite(SR_data_pin, LOW);
-//  pulse_io(SR_st_pin);
-//}
-
-//void valve_on(int valve_index) {
-//  digitalWrite(SR_data_pin, HIGH);
-//  pulse_io(SR_clk_pin);
-//  digitalWrite(SR_data_pin, LOW);
-//  for (int i = 0; i < valve_index; i++)
-//    pulse_io(SR_clk_pin);
-//  pulse_io(SR_st_pin);
-//}
-
-//void on_all_board(int cassette, int board) {
-//  digitalWrite(SR_data_pin, HIGH);
-//  for (int i = 0; i < valves_per_board; i++)
-//    pulse_io(SR_clk_pin);
-//  digitalWrite(SR_data_pin, LOW);
-//  for (int i = 0; i < valves_per_cassette*cassette+valves_per_board*board; i++)
-//    pulse_io(SR_clk_pin);
-//  pulse_io(SR_st_pin);
-//}
 
 void array_to_valves(bool arr[], byte arr_length) {
   for (int i = arr_length - 1; i >= 0; i--) {
