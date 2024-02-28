@@ -9,7 +9,7 @@ empty_image_threshold = 0.1 # if the percentage of black pixels in the image is 
 empty_captures_before_idle = 3  # if this many empty images are taken in a row, the camera will display an idle image
 
 output_width = 64 # DO NOT CHANGE - the width of the image that will be sent to the arduino (the arduino can only receive images with a width of 64 pixels - DO NOT CHANGE)
-output_height = 20 # the height of the image that will be sent to the arduino (max value is 40 - DO NOT OVERPASS THIS VALUE)
+output_height = 25 # the height of the image that will be sent to the arduino (max value is 40 - DO NOT OVERPASS THIS VALUE)
 valve_on_time = 5 # time in milliseconds the valve will be open when the arduino receives the 'd' key
 space_time = 550 # time in milliseconds the arduino will wait after receiving the 's' key before starting the process of dropping the image
 full_light = True # if True, the lights will be on all the time. If False, the lights will be on only after 'led_start_time' milliseconds and for 'led_on_time' milliseconds
@@ -22,7 +22,7 @@ colors_num = len(colors) # the number of colors of the lights  - currently not u
 
 cassettes_num = 10 # the number of cassettes available in the exhibit
 
-port = 'COM4'  # change this to the port where the arduino is connected
+port = 'COM3'  # change this to the port where the arduino is connected
 if platform.system() == "Linux":
     port = '/dev/ttyUSB0'
 
