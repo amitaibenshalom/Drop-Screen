@@ -1,27 +1,6 @@
 
 #include <Arduino.h>
 
-/*
- *==========Arduino Nano pinout====== 
- *                      _______
- *                 TXD-|       |-Vin 
- *                 RXD-|       |-Gnd to driver board  
- *                 RST-|       |-RST
- *                 GND-|       |-+5V To driver board  
- *                  D2-|       |-A7
- *         To EN^,  D3-|       |-A6
- *       To Strobe, D4-|       |-A5 ,SCL (to Display) 
- *          To Clk, D5-|       |-A4 ,SDA (to Display) 
- *         To Data, D6-|       |-A3
- *                  D7-|       |-A2
- *                  D8-|       |-A1
- *                  D9-|       |-A0 
- *                 D10-|       |-Ref
- *                 D11-|       |-3.3V   
- *                 D12-|       |-D13
- *                      --USB--        
- */
-
 #define SR_st_pin 4 // 74HC565 shift register strob pin (12) - active high (low/hig/low pulse shift Sr vector to outputs)make sure set low during "push"data in
 #define SR_clk_pin 13 // 74HC565 shift clock pin (11) - active high (low/high/low pulse shift data in) make sure initaly set to low 
 #define SR_data_pin 11 // 74HC565 Data in pin (14)  

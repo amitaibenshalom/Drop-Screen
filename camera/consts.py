@@ -19,7 +19,6 @@ drawing_depth = 1 # the amount of layers each picture will be (1 is the default 
 led_power = 255 # the power of the lights (0-255) - currently not used
 colors = [[255,0,255],[255,255,0],[255,215,215]] # the colors of the lights, max 8 colors (each color is 3 bytes - RGB)  - currently not used
 colors_num = len(colors) # the number of colors of the lights  - currently not used
-
 cassettes_num = 10 # the number of cassettes available in the exhibit
 
 port = 'COM3'  # change this to the port where the arduino is connected
@@ -41,4 +40,7 @@ drop_key = 'd'  # the key to drop (in water) the image in the arduino's buffer
 start_key = 's'  # the key to send a new image to the arduino's buffer and start the process of dropping it
 end_key = 'e'  # the key to stop the arduino's process of collecting data from computer and dropping the image
 check_key = 'g'  # the key to check the arduino's response
+
+output_width = 64
+output_height = 20
 

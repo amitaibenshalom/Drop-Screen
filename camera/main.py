@@ -255,6 +255,12 @@ while(running):
         else:
             camera_working = True
         img = cv2.flip(img, 0)
+
+        # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        # squish the image on the width axis and add white padding in the sides
+        # img.resize(360-100, 640)
+        # img = cv2.copyMakeBorder(img, 0, 0, 70, 70, cv2.BORDER_CONSTANT, value=[255, 255, 255])
+
         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if not is_folder_created:
             os.makedirs(folder_name, exist_ok=True)
