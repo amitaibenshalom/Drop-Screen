@@ -10,6 +10,7 @@ import pygame
 import numpy as np
 from pygame.locals import *
 from consts import *
+import random
 
 
 # display message on screen
@@ -51,51 +52,49 @@ def send_one_number(value):
     return True
 
 
-def send_drop_signal():
+def send_drop_key():
     global arduino
     arduino.write(drop_key.encode())
-    response = arduino.read()
-    if response is not None:
-        # print(chr(ord(response)))
-        pass
-    else:
-        print('Error: No response from Arduino')
-        return False
+
+def send_start_key():
+    global arduino
+    arduino.write(start_key.encode())
+
+def send_end_key():
+    global arduino
+    arduino.write(end_key.encode())
+
+def send_variables_to_arduino():
+    global arduino, valve_on_time, space_time, full_light, led_start_time, led_on_time, drawing_depth, led_power, colors, colors_num
+    arduino.write(bytearray([output_height]))
+    arduino.write(bytearray([valve_on_time]))
+    arduino.write(bytearray([drawing_depth]))
+    # arduino.write(bytearray([full_light]))
+    # arduino.write(bytearray([led_power]))
+    # arduino.write(bytearray([colors_num]))
+    # for color in colors:
+    #     for value in color:
+    #         arduino.write(bytearray([value]))
+    # response = arduino.read()
+    # if response is not None:
+    #     # print(chr(ord(response)))
+    #     pass
+    # else:
+    #     print('Error: No response from Arduino')
+    #     return False
     return True
+
 
 def send_to_arduino(byte_list):
     global arduino
-
-    arduino.flush()
-    arduino.reset_input_buffer()
-    arduino.reset_output_buffer()
     if log:
         print('Sending data to Arduino...')
-    # send START KEY ('s')
-    arduino.write('s'.encode())
-    response = arduino.read()
-    if response is not None:
-        if log:
-            print(chr(ord(response)))
-    else:
-        print('Error: No response from Arduino')
-        return False
 
     for i in range(len(byte_list)):
-        # send the byte to the arduino
-        # print(ord(byte_list[i]))
-        # print(f"Sending {i+1}/{len(byte_list)}")
         if log:
             print(f"----  {bytearray([byte_list[i]]).hex()}  ----")
         if not send_one_number(bytearray([byte_list[i]])):
             print(f"Error: Could not send {ord(byte_list[i])}")
-            return False
-        response = arduino.readline()
-        if response is not None and len(response) > 0:
-            if log:
-                print(response.decode(), end="")
-        else:
-            print('Error: No response from Arduino')
             return False
         if (i+1) % 8 == 0:
             if log:
@@ -116,7 +115,7 @@ def process_and_save_image(input_path, output_path):
     global time_per_capture, log
     image = cv2.imread(input_path)
     if image is not None:
-        resized_image = cv2.resize(image, (64, 20))
+        resized_image = cv2.resize(image, (output_width, output_height))
         gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
         # Apply binary thresholding to create a black and white image
         _, bw_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
@@ -171,7 +170,6 @@ except Exception as e:
     # exit()
 
 cap = None
-camera_index = 1 # 0 is the default camera on the computer, change it to the camera you want to use
 while True:
     try:
         cap = cv2.VideoCapture(camera_index)
@@ -194,17 +192,27 @@ pygame.display.set_caption("Camera")
 if found_arduino:
     arduino.reset_input_buffer()
     arduino.reset_output_buffer()
+    time.sleep(0.1) # wait for the arduino to process the variables and be ready to receive the image, at least 1 second
+    
 
 font_size = 40
 font = pygame.font.Font(None, font_size)  # Use default system font
 is_folder_created = os.path.exists(folder_name)
 sample_index = 0
+arduino_done = True
+idle = False
+send_parameters = False
 running = True
 while(running):
     
     img = take_picture()  # take a picture every 0.002 seconds to keep the buffer clean with the latest image and avoid delay in the images. Do not remove for Raspberry Pi
     time.sleep(0.002)
     
+    if not send_parameters and found_arduino:
+        send_variables_to_arduino()
+        send_parameters = True
+        time.sleep(0.2) # wait for the arduino to process the variables and be ready to receive the image, at least 0.1 second
+
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
@@ -237,9 +245,8 @@ while(running):
                 threshold -= 10
                 print(f"Threshold: {threshold}")
 
-    if camera_on and time.time() - last_capture >= time_per_capture:
+    if camera_on and time.time() - last_capture >= space_time/1000 and arduino_done:
         img = take_picture()
-        last_capture = time.time()
         if img is None:
             print("Error: Could not take picture")
             camera_on = False
@@ -248,7 +255,6 @@ while(running):
         else:
             camera_working = True
         img = cv2.flip(img, 0)
-        img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if not is_folder_created:
             os.makedirs(folder_name, exist_ok=True)
@@ -260,56 +266,77 @@ while(running):
         screen.fill((0, 0, 0))
         image_display = pygame.image.load(in_path)
         image_bw_display = pygame.image.load(out_path)
-        image_bw_display = pygame.transform.scale(image_bw_display, (screen_width//2, screen_height))
+        image_bw_display = pygame.transform.scale(image_bw_display, (screen_width//2, screen_width//2 * output_height // output_width))
         image_display = pygame.transform.scale(image_display, (screen_width//2, screen_height))
         screen.blit(image_display, (0, 0))
         screen.blit(image_bw_display, (screen_width//2, 0))
         pygame.display.flip()
-    
-        # if black_percentage <= empty_image_threshold:
-        #     empty_captures_in_a_row += 1
-        #     if empty_captures_in_a_row >= empty_captures_before_idle:
-        #         byte_list = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
-        #         sample_index += 1
-        #         if sample_index >= len(idle_images):
-        #             sample_index = 0
-        #         time_per_capture = time_per_capture_idle
-        # else:
-        #     time_per_capture = time_per_capture_default
-        #     empty_captures_in_a_row = 0
 
         if found_arduino and byte_list is not None and black_percentage > empty_image_threshold:
-            time_per_capture = time_per_capture_default
             empty_captures_in_a_row = 0
+            idle = False
             if log:
                 # print(byte_list)
                 print("sending to arduino")
-            send_to_arduino(byte_list)
+            arduino.flush()
+            arduino.reset_input_buffer()
+            arduino.reset_output_buffer()
+
+            cassette = random.randint(0, cassettes_num-1)
+            send_start_key()
+            if not send_one_number(bytearray([cassette])):
+                print("Error: Could not send cassette number")
+                continue
+            if not send_to_arduino(byte_list):
+                print("Error: Could not send image to arduino")
+                continue
+            send_end_key()
             last_capture = time.time()
+            arduino_done = False
         elif found_arduino and byte_list is not None:  # black_percentage <= empty_image_threshold - 'empty' image
             empty_captures_in_a_row += 1
             if empty_captures_in_a_row >= empty_captures_before_idle:
                 if log:
                     print("Image is empty, sending sample image to arduino...")
-                time_per_capture = time_per_capture_idle
+                # time_per_capture = time_per_capture_idle
+                idle = True
                 byte_list, _ = process_and_save_image(os.path.join(idle_folder_name, idle_images[sample_index]), out_path)
                 if byte_list is not None:
-                    send_to_arduino(byte_list)
+                    arduino.flush()
+                    arduino.reset_input_buffer()
+                    arduino.reset_output_buffer()
+                    cassette = random.randint(0, cassettes_num-1)
+                    send_start_key()
+                    if not send_one_number(bytearray([cassette])):
+                        print("Error: Could not send cassette number")
+                        continue
+                    if not send_to_arduino(byte_list):
+                        print("Error: Could not send image to arduino")
+                        continue
+                    send_end_key()
                     sample_index += 1
                     if sample_index >= len(idle_images):
                         sample_index = 0
-                    last_capture = time.time()
+            else:
+                send_drop_key() # drop the image in the arduino's buffer
+            arduino_done = False
+            last_capture = time.time()
         elif found_arduino and byte_list is None:
             print("Error processing image")
 
         # delete images if not saving, or if the time to take the picture is less than 2 seconds for not saving too many images in a short time
-        if not save_picture or time_per_capture <= 2:
+        if not save_picture or space_time/1000 <= 2:
             try:
                 os.remove(in_path)
                 os.remove(out_path)
             except Exception as e:
                 print(f"Error deleting images: {e}")
-
+    
+    elif found_arduino and not arduino_done:
+        if arduino.in_waiting > 0:
+            received_data = arduino.readline().decode().rstrip()
+            # print("Received from Arduino:", received_data)
+            arduino_done = True
     elif not camera_on:
         screen.fill((0, 0, 0))
         msg_on_screen()

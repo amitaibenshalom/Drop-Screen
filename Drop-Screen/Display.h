@@ -128,8 +128,8 @@ void display_vars_error() {
   display.setTextSize(2);
   display.println("ERROR");
   display.setTextSize(1);
-  display.println("no variables collected");
-  display.println("check connection to PI");
+  display.println("no variable collected");
+  display.println("check PI connection");
   display.println("trying again in 5...");
   display.display();
 }
@@ -149,7 +149,7 @@ void display_vars_more_error() {
   display.println("ERROR");
   display.setTextSize(1);
   display.println("got too much variables from PI");
-  display.println("this may cause issues");
+//  display.println("this may cause issues");
   display.display();
 }
 

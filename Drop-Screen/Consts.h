@@ -28,8 +28,10 @@ const byte boards_per_cassette = 4;
 const byte valves_per_board = 16;
 const uint16_t num_of_valves = max_cassettes*boards_per_cassette*valves_per_board; 
 //const uint16_t valves_per_cassette = boards_per_cassette*valves_per_board;
+const byte TIME_DELAY_ARDUINO = 10;  //ms
+const uint32_t MAX_TIME_TO_COLLECT_DATA = 3000;  //ms
 
-byte image_w = 64;  // width of image - do not change
+byte image_w = 64;  // width of image - DO NOT CHNAGE
 byte image_h = 20;  // height of image, PI sends this
 byte valve_on_time = 5;  // how much time (in ms) each row from image is opened on valves
 uint16_t led_start = 350;  // how much time the lights are delayed from first row sent (relevant if "full light" is off)
@@ -50,8 +52,14 @@ uint32_t last_valve_on = 0;  // last time valves started
 uint32_t last_led_start = 0;  // last time delay in lights started
 uint32_t last_led_on = 0;  // last time led started
 
-signed char row_in_drawing = image_h - 1;g //which row in the drawing is currently dropped (from bottom to top)
+signed char row_in_drawing = image_h - 1; //which row in the drawing is currently dropped (from bottom to top)
 byte cassette_drawing = 0; //in which cassette is the image being dropped 
 byte image[320];  // buffer image - max of 64X40 pixels (divided by 8 for bytes)
+
+byte param_index = 0;
+bool got_param = false;  // got inital parameters
+bool start_flag = false;  // got start key
+bool got_cassette = false;   // got cassette number to drop drawing on
+#define PARAM_NUMBER 3
 
 #endif
