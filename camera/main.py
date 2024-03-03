@@ -265,7 +265,7 @@ while(running):
         # img = cv2.copyMakeBorder(img, 0, 0, 70, 70, cv2.BORDER_CONSTANT, value=[255, 255, 255])
 
         # Set the percentage of the image to keep in the center (adjust as needed)
-        crop_percentage = [70,90]  # Keep 80% of the center x and 90% of the center y
+        crop_percentage = [80,98]  # Keep 80% of the center x and 90% of the center y
         # Calculate the dimensions of the central region to keep
         height, width = img.shape[:2]
         crop_height = int(height * crop_percentage[1] / 100)
