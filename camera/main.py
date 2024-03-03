@@ -264,6 +264,23 @@ while(running):
         # img.resize(360-100, 640)
         # img = cv2.copyMakeBorder(img, 0, 0, 70, 70, cv2.BORDER_CONSTANT, value=[255, 255, 255])
 
+        # Set the percentage of the image to keep in the center (adjust as needed)
+        crop_percentage = 80  # Keep 80% of the center
+        # Calculate the dimensions of the central region to keep
+        height, width = img.shape[:2]
+        crop_height = int(height * crop_percentage / 100)
+        crop_width = int(width * crop_percentage / 100)
+        # Calculate the starting point for cropping
+        start_x = (width - crop_width) // 2
+        start_y = (height - crop_height) // 2
+        # Crop the central region of the image
+        cropped_image = img[start_y:start_y + crop_height, start_x:start_x + crop_width]
+        # Create a new image with the same dimensions as the original, filled with white
+        new_image = np.full_like(img, 255, dtype=np.uint8)
+        # Place the cropped image in the center of the new image
+        new_image[start_y:start_y + crop_height, start_x:start_x + crop_width] = cropped_image
+        img = new_image
+
         time_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if not is_folder_created:
             os.makedirs(folder_name, exist_ok=True)
