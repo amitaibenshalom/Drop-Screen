@@ -180,9 +180,9 @@ cap = None
 while True:
     try:
         cap = cv2.VideoCapture(camera_index)  # open the camera
-        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)  # disable automatic exposure - IMPORTANT
-        cap.set(cv2.CAP_PROP_AUTO_WB, 0)  # disable automatic white balance - IMPORTANT
-        cap.set(cv2.CAP_PROP_EXPOSURE, -6)  # set the exposure to a fixed value - IMPORTANT
+        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0 if not auto_exposure else 1)  # disable automatic exposure - IMPORTANT
+        cap.set(cv2.CAP_PROP_AUTO_WB, 0 if not auto_white_balance else 1)  # disable automatic white balance - IMPORTANT
+        cap.set(cv2.CAP_PROP_EXPOSURE, fixed_exposure)  # set the exposure to a fixed value - IMPORTANT
         if cap.isOpened():
             print("Camera is ready")
             camera_working = True
