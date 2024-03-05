@@ -1,3 +1,5 @@
+# NOT USED IN THE FINAL IMPLEMENTATION
+
 import os
 import serial
 from typing import List
@@ -11,20 +13,16 @@ import numpy as np
 from pygame.locals import *
 from consts import *
 
-
-
+# Function to process and save the image in black and white.
 def process_and_save_image(input_path, output_path):
     global time_per_capture, log
     image = cv2.imread(input_path)
     if image is not None:
         resized_image = cv2.resize(image, (64, 20))
         gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-        # Apply binary thresholding to create a black and white image
         _, bw_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
         cv2.imwrite(output_path, bw_image)
         flattened_array = bw_image.flatten()
-        # if log:
-        #     print("len(flattened_array): ", len(flattened_array))
         arr = []
         black_pixels = 0
         for i in range(0, len(flattened_array), 8):
@@ -54,3 +52,5 @@ output_path = "pictures_from_camera2/hand_new_bw.png"
 byte_array, black_pixels_percentage = process_and_save_image(input_path, output_path)
 print("byte_array: ", byte_array)
 print("\nblack_pixels_percentage: ", black_pixels_percentage)
+
+# THIS FILE IS NOT USED IN THE FINAL IMPLEMENTATION
