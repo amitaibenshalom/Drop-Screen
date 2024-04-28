@@ -214,6 +214,11 @@ arduino_done = True  # True if the arduino is done processing the previous image
 idle = False  # True if the camera is in idle mode (no hand detected in the image for 'empty_captures_before_idle' times in a row)
 send_parameters = False  # True if the parameters already sent to the arduino
 
+idle_images = []  # list of the idle images
+for file in os.listdir(idle_folder_name):
+    if file.endswith(".png") or file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".bmp") or file.endswith(".gif"):  # check if the file is an image
+        idle_images.append(file)
+
 running = True  # True if the program is running
 while(running):
 
